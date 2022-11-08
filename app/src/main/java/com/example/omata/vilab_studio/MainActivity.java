@@ -17,6 +17,9 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,26 +45,17 @@ public class MainActivity extends AppCompatActivity {
                 AppData data = new AppData();
                 data.label = app.loadLabel(pm).toString();
                 data.icon = app.loadIcon(pm);
-                data.pname = app.packageName;
                 dataList.add(data);
             }
 
         }
 
         // リストビューにアプリケーションの一覧を表示する
-        final ListView listView = new ListView(this);
-        listView.setAdapter(new AppListAdapter(this, dataList));
-        //クリック処理
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ApplicationInfo item = installedAppList.get(position);
-                PackageManager pManager = getPackageManager();
-                Intent intent = pManager.getLaunchIntentForPackage(item.packageName);
-                startActivity(intent);
-            }
-        });
-        setContentView(listView);
+        setContentView(R.layout.activity);
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
+        recyclerView.setAdapter(new RecyclerAdapter(getApplicationContext(), dataList));
     }
 
     // アプリケーションデータ格納クラス
@@ -70,44 +64,76 @@ public class MainActivity extends AppCompatActivity {
         Drawable icon;
     }
 
-    // アプリケーションのラベルとアイコンを表示するためのアダプタークラス
-    private static class AppListAdapter extends ArrayAdapter<AppData> {
-
-        private final LayoutInflater mInflater;
-
-        public AppListAdapter(Context context, List<AppData> dataList) {
-            super(context, R.layout.activity_main);
-            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            addAll(dataList);
+    private static final class RecyclerAdapter extends RecyclerView.Adapter {
+        private final Context mContext;
+        List<AppData> mdataList = new ArrayList<AppData>();
+        private RecyclerAdapter (final Context context,List<AppData> dataList) {
+            mContext = context;
+            mdataList = dataList;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            final View view = LayoutInflater.from(mContext).inflate(R.layout.activity_main, parent, false);
+            return new ViewHolder(view);
+        }
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            final TextView textItem = (TextView) holder.itemView.findViewById(R.id.label);
+            textItem.setText(mdataList.get(position).label.toString());
+        }
+        @Override
+        public int getItemCount() {
+            return mdataList.size();
+        }
 
-            ViewHolder holder = new ViewHolder();
-
-            if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.activity_main, parent, false);
-                holder.textLabel = (TextView) convertView.findViewById(R.id.label);
-                holder.imageIcon = (ImageView) convertView.findViewById(R.id.icon);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
+        private static class ViewHolder extends RecyclerView.ViewHolder {
+            private final TextView mTextView;
+            private ViewHolder(View v) {
+                super(v);
+                mTextView = (TextView) v.findViewById(R.id.label);
             }
-
-            // 表示データを取得
-            final AppData data = getItem(position);
-            // ラベルとアイコンをリストビューに設定
-            holder.textLabel.setText(data.label);
-            holder.imageIcon.setImageDrawable(data.icon);
-
-            return convertView;
         }
     }
-
-    // ビューホルダー
-    private static class ViewHolder {
-        TextView textLabel;
-        ImageView imageIcon;
-    }
+//
+//    // アプリケーションのラベルとアイコンを表示するためのアダプタークラス
+//    private static class AppListAdapter extends ArrayAdapter<AppData> {
+//
+//        private final LayoutInflater mInflater;
+//
+//        public AppListAdapter(Context context, List<AppData> dataList) {
+//            super(context, R.layout.activity_main);
+//            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//            addAll(dataList);
+//        }
+//
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//
+//            ViewHolder holder = new ViewHolder();
+//
+//            if (convertView == null) {
+//                convertView = mInflater.inflate(R.layout.activity_main, parent, false);
+//                holder.textLabel = (TextView) convertView.findViewById(R.id.label);
+//                holder.imageIcon = (ImageView) convertView.findViewById(R.id.icon);
+//                convertView.setTag(holder);
+//            } else {
+//                holder = (ViewHolder) convertView.getTag();
+//            }
+//
+//            // 表示データを取得
+//            final AppData data = getItem(position);
+//            // ラベルとアイコンをリストビューに設定
+//            holder.textLabel.setText(data.label);
+//            holder.imageIcon.setImageDrawable(data.icon);
+//
+//            return convertView;
+//        }
+//    }
+//
+//    // ビューホルダー
+//    private static class ViewHolder {
+//        TextView textLabel;
+//        ImageView imageIcon;
+//    }
 }
