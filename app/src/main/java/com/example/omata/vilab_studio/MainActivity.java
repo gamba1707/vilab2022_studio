@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
     private static class AppData {
         String label;
         Drawable icon;
-        String pname;
     }
 
     // アプリケーションのラベルとアイコンを表示するためのアダプタークラス
