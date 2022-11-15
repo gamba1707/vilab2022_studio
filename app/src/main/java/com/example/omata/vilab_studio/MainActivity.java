@@ -80,7 +80,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             final TextView textItem = (TextView) holder.itemView.findViewById(R.id.label);
+            ImageView imageView=(ImageView) holder.itemView.findViewById(R.id.imageView);
             textItem.setText(mdataList.get(position).label.toString());
+            imageView.setImageDrawable(mdataList.get(position).icon);
         }
         @Override
         public int getItemCount() {
@@ -89,9 +91,12 @@ public class MainActivity extends AppCompatActivity {
 
         private static class ViewHolder extends RecyclerView.ViewHolder {
             private final TextView mTextView;
+            ImageView imageView;
             private ViewHolder(View v) {
                 super(v);
                 mTextView = (TextView) v.findViewById(R.id.label);
+                imageView=(ImageView) v.findViewById(R.id.imageView);
+
             }
         }
     }

@@ -1,31 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:layout_margin="1dp"
     android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="50"
-        app:srcCompat="@mipmap/ic_launcher" />
 
-  <TextView
-        android:id="@+id/label"
+
+    <ImageView
+        android:id="@+id/back"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="1dp"
-        android:gravity="center_vertical"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:background="#F8BBD0"
+        />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:contentDescription="icon"
+        android:background="#F8BBD0"
+        />
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:textColor="#424242"
-        android:background="#F8BBD0"/>
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+
+        />
 
 
 
-<!--    /*-->
+    <!--    /*-->
 <!--    -->
 <!--    &lt;!&ndash; パッケージ名 &ndash;&gt;-->
 <!--    <TextView-->
@@ -37,4 +52,4 @@
 <!--        android:layout_alignParentRight="true" />-->
 <!--    */-->
 
-</LinearLayout>
+</RelativeLayout>
