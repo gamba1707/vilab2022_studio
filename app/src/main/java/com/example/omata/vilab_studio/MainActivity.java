@@ -3,7 +3,10 @@ package com.example.omata.vilab_studio;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PermissionGroupInfo;
+import android.content.pm.PermissionInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -37,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
         final PackageManager pm = getPackageManager();
         final int flags = PackageManager.GET_UNINSTALLED_PACKAGES | PackageManager.GET_DISABLED_COMPONENTS;
         final List<ApplicationInfo> installedAppList = pm.getInstalledApplications(0);
+        String[] requestedPermissions = new String[100];
+
 
         // リストに一覧データを格納する
         final List<AppData> dataList = new ArrayList<AppData>();
@@ -45,6 +50,27 @@ public class MainActivity extends AppCompatActivity {
                 AppData data = new AppData();
                 data.label = app.loadLabel(pm).toString();
                 data.icon = app.loadIcon(pm);
+
+                        try {
+                                requestedPermissions = pm.getPackageInfo(app.packageName, PackageManager.GET_PERMISSIONS).requestedPermissions;
+                            } catch (PackageManager.NameNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+                //ここでログにアプリ名と持っている権限を表示している
+                if(requestedPermissions!=null){
+                    System.out.println("アプリ名："+data.label);
+                    PermissionInfo permissionInfo = new PermissionInfo();
+                    for(String s:requestedPermissions){
+                        try {
+                            permissionInfo=pm.getPermissionInfo(s,0);
+                        } catch (PackageManager.NameNotFoundException e) {
+
+                        }
+                        //パーミッショングループがあるものは表示
+                        if(permissionInfo.group!=null)System.out.println("groupname:"+permissionInfo.group+"  permname:"+s);
+                    }
+                }
                 dataList.add(data);
             }
 
@@ -100,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+
 //
 //    // アプリケーションのラベルとアイコンを表示するためのアダプタークラス
 //    private static class AppListAdapter extends ArrayAdapter<AppData> {

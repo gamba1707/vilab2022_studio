@@ -3,10 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/bodysensor.xml" value="0.1805" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/calender.xml" value="0.1805" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/camera.xml" value="0.1805" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/contacts.xml" value="0.1805" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/device_information.xml" value="0.1805" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/ic_baseline_place_24.xml" value="0.1805" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1805" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/mic.xml" value="0.1805" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/phone.xml" value="0.1805" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/place.xml" value="0.1805" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/sms.xml" value="0.1805" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/storage.xml" value="0.1805" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/activity.xml" value="0.33" />

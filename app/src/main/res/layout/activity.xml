@@ -43,43 +43,79 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
-                android:layout_marginEnd="5dp"
-                android:text="あいうえお" />
+                android:drawableTop="@drawable/bodysensor"
+                android:scaleType="fitXY"
+                android:gravity="center|bottom"
+                android:text="センサー" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
-                android:layout_marginEnd="5dp"
-                android:text="かきくけこ" />
+                android:drawableTop="@drawable/calender"
+                android:gravity="center|bottom"
+                android:text="カレンダー"
+                app:iconPadding="0dp" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
-                android:layout_marginEnd="5dp"
-                android:text="さしすせそ" />
+                android:drawableTop="@drawable/camera"
+                android:gravity="center|bottom"
+                android:text="カメラ" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
-                android:layout_marginEnd="5dp"
-                android:text="たちすてと" />
+                android:drawableTop="@drawable/contacts"
+                android:gravity="center|bottom"
+                android:text="連絡先" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
-                android:layout_marginEnd="5dp"
-                android:text="なにぬねの" />
+                android:drawableTop="@drawable/place"
+                android:gravity="center|bottom"
+                android:text="位置情報" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
-                android:layout_marginEnd="5dp"
-                android:text="はひふへほ" />
+                android:drawableTop="@drawable/mic"
+                android:gravity="center|bottom"
+                android:text="マイク" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:drawableTop="@drawable/phone"
+                android:gravity="center|bottom"
+                android:text="電話" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:drawableTop="@drawable/sms"
+                android:gravity="center|bottom"
+                android:text="SMS" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:drawableTop="@drawable/storage"
+                android:gravity="center|bottom"
+                android:text="ストレージ" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:gravity="center|bottom"
+                android:drawableTop="@drawable/device_information"
+                android:text="その他" />
 
         </LinearLayout>
 
