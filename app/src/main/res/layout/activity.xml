@@ -40,6 +40,7 @@
             android:layout_height="match_parent">
 
             <Button
+                android:id="@+id/sensorbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
@@ -49,6 +50,7 @@
                 android:text="センサー" />
 
             <Button
+                android:id="@+id/calenderbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
@@ -58,6 +60,7 @@
                 app:iconPadding="0dp" />
 
             <Button
+                android:id="@+id/camerabutton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
@@ -66,6 +69,7 @@
                 android:text="カメラ" />
 
             <Button
+                android:id="@+id/contactsbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
@@ -74,6 +78,7 @@
                 android:text="連絡先" />
 
             <Button
+                android:id="@+id/placebutton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
@@ -82,6 +87,7 @@
                 android:text="位置情報" />
 
             <Button
+                android:id="@+id/micbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
@@ -89,6 +95,7 @@
                 android:gravity="center|bottom"
                 android:text="マイク" />
             <Button
+                android:id="@+id/phonebutton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
@@ -96,6 +103,7 @@
                 android:gravity="center|bottom"
                 android:text="電話" />
             <Button
+                android:id="@+id/smsbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
@@ -103,6 +111,7 @@
                 android:gravity="center|bottom"
                 android:text="SMS" />
             <Button
+                android:id="@+id/storagebutton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
@@ -110,6 +119,7 @@
                 android:gravity="center|bottom"
                 android:text="ストレージ" />
             <Button
+                android:id="@+id/infobutton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"

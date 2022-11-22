@@ -1,5 +1,7 @@
 package com.example.omata.vilab_studio;
 
+import static android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -7,19 +9,25 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,38 +48,65 @@ public class MainActivity extends AppCompatActivity {
         final PackageManager pm = getPackageManager();
         final int flags = PackageManager.GET_UNINSTALLED_PACKAGES | PackageManager.GET_DISABLED_COMPONENTS;
         final List<ApplicationInfo> installedAppList = pm.getInstalledApplications(0);
+        //とりあえず仮置きで権限を入れて表示（100個も権限ないだろみたいな）
         String[] requestedPermissions = new String[100];
 
 
         // リストに一覧データを格納する
         final List<AppData> dataList = new ArrayList<AppData>();
         for (ApplicationInfo app : installedAppList) {
-            if (!((app.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM)){
+            if (!((app.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM)) {
                 AppData data = new AppData();
                 data.label = app.loadLabel(pm).toString();
                 data.icon = app.loadIcon(pm);
-
-                        try {
-                                requestedPermissions = pm.getPackageInfo(app.packageName, PackageManager.GET_PERMISSIONS).requestedPermissions;
-                            } catch (PackageManager.NameNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                data.permission= new ArrayList<String>();
+                data.permissionGroup=new ArrayList<String>();
+                try {
+                    requestedPermissions = pm.getPackageInfo(app.packageName, PackageManager.GET_PERMISSIONS).requestedPermissions;
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
 
                 //ここでログにアプリ名と持っている権限を表示している
-                if(requestedPermissions!=null){
-                    System.out.println("アプリ名："+data.label);
+                if (requestedPermissions != null) {
+                    System.out.println("アプリ名：" + data.label);
                     PermissionInfo permissionInfo = new PermissionInfo();
-                    for(String s:requestedPermissions){
+                    for (String s : requestedPermissions) {
+                        data.permission.add(s);//一個ずつ配列からListに入れていく
+
                         try {
-                            permissionInfo=pm.getPermissionInfo(s,0);
+                            permissionInfo = pm.getPermissionInfo(s, 0);
                         } catch (PackageManager.NameNotFoundException e) {
 
                         }
-                        //パーミッショングループがあるものは表示
-                        if(permissionInfo.group!=null)System.out.println("groupname:"+permissionInfo.group+"  permname:"+s);
+                        //権限がDangerousであるものは表示
+                        //pm.checkPermission(権限名,パッケージ名)でユーザーが許可してるか取得
+                        //それでもし0が出るならTrue、-1ならfalseを出力させる（三項演算子を使って）
+                        if(Build.VERSION.SDK_INT >= 28){//API28(Android9)以降用
+                            if (permissionInfo.getProtection()==PROTECTION_DANGEROUS){
+                                System.out.println("groupname:" + permissionInfo.group + "  permname:" + s+"    権限許可状況："+((pm.checkPermission(s,app.packageName) == PackageManager.PERMISSION_GRANTED)?true:false));
+                                //もし新しいグループだった場合は登録する
+                                if(!data.permissionGroup.contains(permissionInfo.group))data.permissionGroup.add(permissionInfo.group);
+                            }
+                        }
+                        else{//それ以下のバージョン用
+                            if (permissionInfo.protectionLevel==PROTECTION_DANGEROUS){
+                                System.out.println("groupname:" + permissionInfo.group + "  permname:" + s+"    権限許可状況："+((pm.checkPermission(s,app.packageName) == PackageManager.PERMISSION_GRANTED)?true:false));
+                                //もし新しいグループだった場合は登録する
+                                if(!data.permissionGroup.contains(permissionInfo.group))data.permissionGroup.add(permissionInfo.group);
+                            }
+
+                        }
                     }
                 }
-                dataList.add(data);
+                System.out.println(data.permission.toString());
+                System.out.println(data.permissionGroup.toString());
+                //グループの数繰り返して登録して面積分にする
+                for(int i=0;i<data.permissionGroup.size();i++){
+                    dataList.add(data);
+                }
+                //0の場合も一応。。。
+                if(data.permissionGroup.size()<=0)dataList.add(data);
             }
 
         }
@@ -80,20 +115,32 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity);
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
+        recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 4));
         recyclerView.setAdapter(new RecyclerAdapter(getApplicationContext(), dataList));
+
+
+
+        //ここからボタン処理
+        Button sensorbutton = findViewById(R.id.sensorbutton);
+        sensorbutton.setOnClickListener( v -> {
+            Toast toast = Toast.makeText(this,"センサーボタンを押しましたね", Toast.LENGTH_SHORT);
+            toast.show();
+        });
     }
 
     // アプリケーションデータ格納クラス
     private static class AppData {
-        String label;
-        Drawable icon;
+        String label;//アプリ名
+        Drawable icon;//アプリアイコン
+        List<String>permission;//要求権限
+        List<String>permissionGroup;
     }
 
     private static final class RecyclerAdapter extends RecyclerView.Adapter {
         private final Context mContext;
         List<AppData> mdataList = new ArrayList<AppData>();
-        private RecyclerAdapter (final Context context,List<AppData> dataList) {
+
+        private RecyclerAdapter(final Context context, List<AppData> dataList) {
             mContext = context;
             mdataList = dataList;
         }
@@ -103,13 +150,18 @@ public class MainActivity extends AppCompatActivity {
             final View view = LayoutInflater.from(mContext).inflate(R.layout.activity_main, parent, false);
             return new ViewHolder(view);
         }
+
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             final TextView textItem = (TextView) holder.itemView.findViewById(R.id.label);
-            ImageView imageView=(ImageView) holder.itemView.findViewById(R.id.imageView);
+            ImageView imageView = (ImageView) holder.itemView.findViewById(R.id.imageView);
+            ImageView back = (ImageView) holder.itemView.findViewById(R.id.back);
             textItem.setText(mdataList.get(position).label.toString());
             imageView.setImageDrawable(mdataList.get(position).icon);
+            if(mdataList.get(position).permissionGroup.size()<=0)back.setBackgroundColor(Color.parseColor("#4169e1"));
+
         }
+
         @Override
         public int getItemCount() {
             return mdataList.size();
@@ -118,11 +170,13 @@ public class MainActivity extends AppCompatActivity {
         private static class ViewHolder extends RecyclerView.ViewHolder {
             private final TextView mTextView;
             ImageView imageView;
+            ImageView back;
+
             private ViewHolder(View v) {
                 super(v);
                 mTextView = (TextView) v.findViewById(R.id.label);
-                imageView=(ImageView) v.findViewById(R.id.imageView);
-
+                imageView = (ImageView) v.findViewById(R.id.imageView);
+                back = (ImageView) v.findViewById(R.id.back);
             }
         }
     }
