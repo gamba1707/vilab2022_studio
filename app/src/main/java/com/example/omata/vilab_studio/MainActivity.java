@@ -2,6 +2,8 @@ package com.example.omata.vilab_studio;
 
 import static android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;
 
+import static java.text.Normalizer.normalize;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -10,10 +12,13 @@ import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,13 +37,25 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MainActivity extends AppCompatActivity {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //main.xmlの内容を読み込む
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.option,menu);
+        return true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // リストに一覧データを格納する
-        final List<AppData> dataList = new ArrayList<AppData>();
+        ArrayList<AppData> dataList = new ArrayList<AppData>();
         for (ApplicationInfo app : installedAppList) {
             if (!((app.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM)) {
                 AppData data = new AppData();
@@ -99,14 +116,20 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-                System.out.println(data.permission.toString());
-                System.out.println(data.permissionGroup.toString());
+
                 //グループの数繰り返して登録して面積分にする
                 for(int i=0;i<data.permissionGroup.size();i++){
                     dataList.add(data);
                 }
                 //0の場合も一応。。。
-                if(data.permissionGroup.size()<=0)dataList.add(data);
+                if(data.permissionGroup.size()<=0){
+                    dataList.add(data);
+                }
+
+                sortdata(dataList);
+                System.out.println(data.permission.toString());
+                System.out.println("size:"+data.permissionGroup.size());
+                System.out.println(data.permissionGroup.toString());
             }
 
         }
@@ -117,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 4));
         recyclerView.setAdapter(new RecyclerAdapter(getApplicationContext(), dataList));
-
 
 
         //ここからボタン処理
@@ -136,6 +158,23 @@ public class MainActivity extends AppCompatActivity {
         List<String>permissionGroup;
     }
 
+    //ソートしたい
+    ArrayList<AppData> sortdata(ArrayList<AppData> appData){
+        Collections.sort(appData, new Comparator<AppData>() {
+            @Override
+            public int compare(AppData a1, AppData a2) {
+                String a1name=normalize(a1.label, Normalizer.Form.NFKC);//半角カタカナでアプリ名設定をしている不届き者を変換
+                String a2name=normalize(a2.label, Normalizer.Form.NFKC);
+
+                if(a1.label==null||a2.label==null) return 0;
+                return a1name.compareToIgnoreCase(a2name);//大文字小文字は区別しない場合ToIgnoreCase
+            }
+        });
+        return appData;
+    }
+
+
+    //ここでリストをViewに設定する
     private static final class RecyclerAdapter extends RecyclerView.Adapter {
         private final Context mContext;
         List<AppData> mdataList = new ArrayList<AppData>();
@@ -151,14 +190,21 @@ public class MainActivity extends AppCompatActivity {
             return new ViewHolder(view);
         }
 
+
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            holder.setIsRecyclable(false);//リサイクルして軽くするという良さは消しているが、これをしないと見るたびに色指定が変わる
             final TextView textItem = (TextView) holder.itemView.findViewById(R.id.label);
             ImageView imageView = (ImageView) holder.itemView.findViewById(R.id.imageView);
             ImageView back = (ImageView) holder.itemView.findViewById(R.id.back);
+
             textItem.setText(mdataList.get(position).label.toString());
             imageView.setImageDrawable(mdataList.get(position).icon);
-            if(mdataList.get(position).permissionGroup.size()<=0)back.setBackgroundColor(Color.parseColor("#4169e1"));
+
+            if(mdataList.get(position).permissionGroup.isEmpty()){//もしパーミッショングループをもっていなかったら
+                //System.out.println("アプリ名：" + mdataList.get(position).label.toString());
+                back.setBackgroundColor(Color.parseColor("#2196F3"));
+            }
 
         }
 
