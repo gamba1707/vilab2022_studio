@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- ▽選択時の設定▽ -->
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <!-- 背景色 -->
+            <solid android:color="#9575CD" />
+            <!-- 角丸 -->
+            <corners
+                android:topRightRadius="5dp"
+                android:bottomRightRadius="5dp"
+                android:bottomLeftRadius="5dp"
+                android:topLeftRadius="5dp"
+                />
+        </shape>
+    </item>
+    <!-- ▽非選択時の設定▽ -->
+    <item android:state_checked="false">
+        <shape android:shape="rectangle">
+            <!-- 背景色 -->
+            <solid android:color="#6200ee" />
+            <!-- 角丸 -->
+            <corners
+                android:topRightRadius="5dp"
+                android:bottomRightRadius="5dp"
+                android:bottomLeftRadius="5dp"
+                android:topLeftRadius="5dp"
+                />
+        </shape>
+    </item>
+</selector>

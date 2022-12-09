@@ -39,15 +39,23 @@
             android:layout_width="fill_parent"
             android:layout_height="match_parent">
 
-            <Button
+        <CheckBox
                 android:id="@+id/sensorbutton"
-                android:layout_width="wrap_content"
+                android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
                 android:drawableTop="@drawable/bodysensor"
-                android:scaleType="fitXY"
+                android:paddingTop="8dp"
                 android:gravity="center|bottom"
-                android:text="センサー" />
+                android:paddingBottom="3dp"
+                android:text="センサー"
+                android:textColor="@color/white" />
+
 
             <Button
                 android:id="@+id/calenderbutton"
