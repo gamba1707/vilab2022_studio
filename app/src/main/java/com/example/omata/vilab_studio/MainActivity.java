@@ -5,14 +5,10 @@ import static android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;
 import static java.text.Normalizer.normalize;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,37 +17,22 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Serializable {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //main.xmlの内容を読み込む
@@ -63,9 +44,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity);
         // 端末にインストール済のアプリケーション一覧情報を取得
+        List<AppData> dataList = new ArrayList<AppData>();
         final PackageManager pm = getPackageManager();
         final int flags = PackageManager.GET_UNINSTALLED_PACKAGES | PackageManager.GET_DISABLED_COMPONENTS;
         final List<ApplicationInfo> installedAppList = pm.getInstalledApplications(0);
@@ -74,10 +57,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         // リストに一覧データを格納する
-        ArrayList<AppData> dataList = new ArrayList<AppData>();
         for (ApplicationInfo app : installedAppList) {
             if (!((app.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM)) {
-                AppData data = new AppData();
+                MainActivity.AppData data = new MainActivity.AppData();
                 data.label = app.loadLabel(pm).toString();
                 data.icon = app.loadIcon(pm);
                 data.request_permission = new ArrayList<String>();
@@ -101,19 +83,22 @@ public class MainActivity extends AppCompatActivity {
                         } catch (PackageManager.NameNotFoundException e) {
 
                         }
+
+                        //System.out.println("groupname:" + permissionInfo.group +"   level:"+permissionInfo.protectionLevel+ "  permname:" + s+"    権限許可状況："+((pm.checkPermission(s,app.packageName) == PackageManager.PERMISSION_GRANTED)?true:false));
+
                         //権限がDangerousであるものは表示
                         //pm.checkPermission(権限名,パッケージ名)でユーザーが許可してるか取得
                         //それでもし0が出るならTrue、-1ならfalseを出力させる（三項演算子を使って）
                         if (Build.VERSION.SDK_INT >= 28) {//API28(Android9)以降用
                             if (permissionInfo.getProtection() == PROTECTION_DANGEROUS) {
-                                //System.out.println("groupname:" + permissionInfo.group + "  permname:" + s+"    権限許可状況："+((pm.checkPermission(s,app.packageName) == PackageManager.PERMISSION_GRANTED)?true:false));
+                                System.out.println("groupname:" + permissionInfo.group + "  permname:" + s + "    権限許可状況：" + ((pm.checkPermission(s, app.packageName) == PackageManager.PERMISSION_GRANTED) ? true : false));
                                 //もし新しいグループだった場合は登録する
                                 if (!data.permissionGroup.contains(permissionInfo.group))
                                     data.permissionGroup.add(permissionInfo.group);
                             }
                         } else {//それ以下のバージョン用
-                            if (permissionInfo.protectionLevel == PROTECTION_DANGEROUS) {
-                                //System.out.println("groupname:" + permissionInfo.group + "  permname:" + s+"    権限許可状況："+((pm.checkPermission(s,app.packageName) == PackageManager.PERMISSION_GRANTED)?true:false));
+                            if (permissionInfo.protectionLevel == 4097 || permissionInfo.protectionLevel == 1) {
+                                System.out.println("groupname:" + permissionInfo.group + "  permname:" + s + "    権限許可状況：" + ((pm.checkPermission(s, app.packageName) == PackageManager.PERMISSION_GRANTED) ? true : false));
                                 //もし新しいグループだった場合は登録する
                                 if (!data.permissionGroup.contains(permissionInfo.group))
                                     data.permissionGroup.add(permissionInfo.group);
@@ -135,25 +120,24 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(data.permissionGroup.toString());
                 System.out.println(data.permission);
             }
-            sortdata(dataList);
         }
+        sortdata(dataList);
+
 
         // リストビューにアプリケーションの一覧を表示する
-        setContentView(R.layout.activity);
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 4));
         recyclerView.setAdapter(new RecyclerAdapter(getApplicationContext(), dataList));
-
     }
 
     //ここで渡されたパーミッショングループの数、データを水増しする。（中で書くとdataが一つしか生成できなくてこうするしかなかった）
-    public AppData setpermission(int i, AppData data) {
+    public AppData setpermission(int i, MainActivity.AppData data) {
         if (i == 0) {//0個目だけ元々作ってあるしもったいないかなって
             data.permission = data.permissionGroup.get(i);
             return data;
         } else {
-            AppData d2 = new AppData();
+            MainActivity.AppData d2 = new MainActivity.AppData();
             d2.label = data.label;
             d2.icon = data.icon;
             d2.request_permission = data.request_permission;
@@ -163,17 +147,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     // アプリケーションデータ格納クラス
-    private static class AppData {
+    public static class AppData implements Serializable {
         String label;//アプリ名
         Drawable icon;//アプリアイコン
         List<String> request_permission;//要求権限
         List<String> permissionGroup;//パーミッショングループ
         String permission;//かさまし分のそれぞれの権限
+
     }
 
     //ソートしたい
-    ArrayList<AppData> sortdata(ArrayList<AppData> appData) {
+    List<AppData> sortdata(List<AppData> appData) {
         Collections.sort(appData, new Comparator<AppData>() {
             @Override
             public int compare(AppData a1, AppData a2) {
@@ -190,12 +176,16 @@ public class MainActivity extends AppCompatActivity {
     //ここでリストをViewに設定する
     private final class RecyclerAdapter extends RecyclerView.Adapter {
         private final Context mContext;
-        List<AppData> mdataList = new ArrayList<AppData>();
+        List<AppData> mdataList = new ArrayList<AppData>();//本体
+        List<AppData> mdataList_copy = new ArrayList<AppData>();//本体
+        List<AppData> remove_dataList = new ArrayList<AppData>();
+        List<String> remove_permissionList = new ArrayList<String>();
         int count = 0;
 
         private RecyclerAdapter(final Context context, List<AppData> dataList) {
             mContext = context;
             mdataList = dataList;
+            mdataList_copy = dataList;
         }
 
         @Override
@@ -229,13 +219,123 @@ public class MainActivity extends AppCompatActivity {
 
             //ここからボタン処理
             //センサーボタン処理
-            CheckBox checkBox = findViewById(R.id.sensorbutton);
-            checkBox.setOnClickListener(view -> {
-                CheckBox c = (CheckBox)view;
+            CheckBox sensor_checkBox = findViewById(R.id.sensorbutton);
+            sensor_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
                 if (c.isChecked()) {
                     System.out.println("ONに変更されました");
+                    removeApp("センサー");
                 } else {
                     System.out.println("OFFに変更されました");
+                    resetApp("センサー");
+                }
+            });
+            //カレンダーボタン処理
+            CheckBox calender_checkBox = findViewById(R.id.calenderbutton);
+            calender_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("カレンダー");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("カレンダー");
+                }
+            });
+            //カメラボタン処理
+            CheckBox camera_checkBox = findViewById(R.id.camerabutton);
+            camera_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("カメラ");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("カメラ");
+                }
+            });
+            //連絡先ボタン処理
+            CheckBox contact_checkBox = findViewById(R.id.contactsbutton);
+            contact_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("連絡先");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("連絡先");
+                }
+            });
+            //位置情報ボタン処理
+            CheckBox place_checkBox = findViewById(R.id.placebutton);
+            place_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("位置情報");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("位置情報");
+                }
+            });
+            //マイクボタン処理
+            CheckBox mic_checkBox = findViewById(R.id.micbutton);
+            mic_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("マイク");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("マイク");
+                }
+            });
+            //電話ボタン処理
+            CheckBox phone_checkBox = findViewById(R.id.phonebutton);
+            phone_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("電話機能");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("電話機能");
+                }
+            });
+            //smsボタン処理
+            CheckBox sms_checkBox = findViewById(R.id.smsbutton);
+            sms_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("SMS(Cメール)");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("SMS(Cメール)");
+                }
+            });
+            //ストレージボタン処理
+            CheckBox storage_checkBox = findViewById(R.id.storagebutton);
+            storage_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("ストレージ");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("ストレージ");
+                }
+            });
+            //その他ボタン処理
+            CheckBox info_checkBox = findViewById(R.id.infobutton);
+            info_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("その他");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("その他");
                 }
             });
         }
@@ -257,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
                 case "android.permission-group.LOCATION":
                     if (Build.VERSION.SDK_INT >= 31)
                         return "位置情報";//API31以降ではWi-FiスキャンやBluetoothは含まれなくなる
-                    else return "位置(Wi-Fiスキャン,Bluetooth含む)";//旧API端末ではそのまま
+                    else return "位置(Wi-Fi,Bluetooth)";//旧API端末ではそのまま
                 case "android.permission-group.MICROPHONE":
                     return "マイク";
                 case "android.permission-group.NEARBY_DEVICES"://API31
@@ -280,11 +380,175 @@ public class MainActivity extends AppCompatActivity {
             return s.substring(s.lastIndexOf(".") + 1);//おそらくここに来る場合はAndroid純正の権限ではなく独自権限
         }
 
-        public void removeApp(String permissionname,RecyclerView.ViewHolder holder) {
-
-            for (int i = 0; i < mdataList.size(); i++) {
-                System.out.println("ID:"+holder.getItemId()+"position:"+holder.getAdapterPosition());
+        //英語のパーミッショングループ名を日本語に変換する
+        //android.permission-group.STORAGE などを ストレージ に変換する
+        public String permission_j2e(String s) {
+            switch (s) {
+                case "行動認識":
+                    return "android.permission-group.ACTIVITY_RECOGNITION";
+                case "カレンダー":
+                    return "android.permission-group.CALENDAR";
+                case "通話履歴":
+                    return "android.permission-group.CALL_LOG";
+                case "カメラ":
+                    return "android.permission-group.CAMERA";
+                case "連絡先":
+                    return "android.permission-group.CONTACTS";
+                case "位置情報":
+                    return "android.permission-group.LOCATION";
+                case "位置(Wi-Fi,Bluetooth)":
+                    return "android.permission-group.LOCATION";
+                case "マイク":
+                    return "android.permission-group.MICROPHONE";
+                case "ニアバイデバイス(Bluetooth)"://API31
+                    return "android.permission-group.NEARBY_DEVICES";
+                case "通知":
+                    return "android.permission-group.NOTIFICATIONS";
+                case "電話機能":
+                    return "android.permission-group.PHONE";
+                case "オーディオ読み取り"://API33
+                    return "android.permission-group.READ_MEDIA_AURAL";
+                case "画像・動画読み取り"://API33
+                    return "android.permission-group.READ_MEDIA_VISUAL";
+                case "センサー":
+                    return "android.permission-group.SENSORS";
+                case "SMS(Cメール)":
+                    return "android.permission-group.SMS";
+                case "ストレージ":
+                    return "android.permission-group.STORAGE";
             }
+            return "取得失敗";//
+        }
+
+        public void resetApp(String permissionname) {
+            remove_permissionList.remove(permission_j2e(permissionname));
+            boolean ok = false;
+            do {
+                for (int i = 0; i < remove_dataList.size(); i++) {
+                    //もしそのアプリの権限が今消している権限ではなかったら
+                    if (!(remove_permissionList.contains(remove_dataList.get(i).permission))) {
+                        mdataList.add(remove_dataList.get(i));
+                        System.out.println("追加 アプリ：" + remove_dataList.get(i).label + "権限名：" + remove_dataList.get(i).permission);
+                        remove_dataList.remove(i);
+                    }
+                }
+                check:
+                for (int i = 0; i < remove_dataList.size(); i++) {
+                    if (remove_permissionList.contains(remove_dataList.get(i).permission))
+                        ok = true;
+                    else {
+                        ok = false;
+                        System.out.println("追加 アプリ：" + remove_dataList.get(i).label + "権限名：" + remove_dataList.get(i).permission);
+                        mdataList.add(remove_dataList.get(i));
+                        remove_dataList.remove(i);
+                        break check;//もし指定した権限以外が残っていた場合はもう一度やり直し
+                    }
+                }
+                if (remove_dataList.isEmpty()) ok = true;
+            } while (!ok);
+            sortdata(mdataList);
+            notifyDataSetChanged();
+        }
+
+        //権限名を渡すとその権限以外のアプリを削除する
+        public void removeApp(String permissionname) {
+            //もし一つ目の権限選択の場合
+            if (remove_permissionList.isEmpty()) {
+                remove_permissionList.add(permission_j2e(permissionname));
+                boolean ok = false;
+                do {
+                    //アプリの数ループして、指定された権限があれば削除していく
+                    for (int i = 0; i < getItemCount(); i++) {
+                        if (!mdataList.get(i).permission.equals(permission_j2e(permissionname))) {
+                            //System.out.println("アプリ："+ra.mdataList.get(i).label+"権限名："+ra.mdataList.get(i).permission);
+                            System.out.println("削除 アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
+                            remove_dataList.add(mdataList.get(i));
+                            mdataList.remove(i);
+                            notifyItemRemoved(i);
+                        }
+                    }
+                    //なぜか消えないアプリがあるので確かめて消し忘れがある場合もう一度消す作業を行う
+                    check:
+                    for (int i = 0; i < getItemCount(); i++) {
+                        if (mdataList.get(i).permission.equals(permission_j2e(permissionname)))
+                            ok = true;
+                        else {
+                            ok = false;
+                            System.out.println("削除 アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
+                            remove_dataList.add(mdataList.get(i));
+                            mdataList.remove(i);
+                            notifyItemRemoved(i);
+                            break check;//もし指定した権限以外が残っていた場合はもう一度やり直し
+                        }
+                    }
+                    if (getItemCount() <= 0) ok = true;
+                } while (!ok);//trueな限りdoを回り続けるという罠
+                for (int i = 0; i < getItemCount(); i++) {
+                    System.out.println("アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
+                }
+            }
+            //もし複数選択している場合はそのアプリの隣に表示
+            else {
+                boolean ok = false;
+                remove_permissionList.add(permission_j2e(permissionname));
+                int index = -1;
+                System.out.println("remove_permissionList:" + remove_permissionList);
+                do{
+                    //アプリの数ループして、指定された権限があれば削除していく
+                    for (int i = 0; i < remove_dataList.size(); i++) {
+                        System.out.println("appname:"+remove_dataList.get(i).label+"equals:"+remove_dataList.get(i).permission.equals(permission_j2e(permissionname))+"    group:"+remove_dataList.get(i).permissionGroup+"contain:"+remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList));
+                        //権限が一致する場合戻ってこーい
+                        if (remove_dataList.get(i).permission.equals(permission_j2e(permissionname)) && remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList)) {
+                            index = index_calculation(remove_dataList.get(i).label);
+
+
+                            if (index != -1) {
+                                System.out.println("復元 position:" + index + " アプリ：" + remove_dataList.get(i).label + "権限名：" + remove_dataList.get(i).permission);
+                                mdataList.add(index, remove_dataList.get(i));
+                                notifyItemInserted(index);
+                                remove_dataList.remove(i);
+                            }
+                        }
+                    }
+                    for (int i = 0; i < mdataList.size(); i++) {
+                        System.out.println("appname:" + mdataList.get(i).label + "    group:" + mdataList.get(i).permissionGroup + "contain:" + mdataList.get(i).permissionGroup.containsAll(remove_permissionList));
+                        if (!mdataList.get(i).permissionGroup.containsAll(remove_permissionList)) {
+                            System.out.println("2つ目以降削除 アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
+                            remove_dataList.add(mdataList.get(i));
+                            mdataList.remove(i);
+                            notifyItemRemoved(i);
+                        }
+                    }
+                    //確認
+                    for (int i = 0; i < mdataList.size(); i++) {
+                        //System.out.println("appname:" + mdataList.get(i).label + "    group:" + mdataList.get(i).permissionGroup + "contain:" + mdataList.get(i).permissionGroup.containsAll(remove_permissionList));
+                        if (!mdataList.get(i).permissionGroup.containsAll(remove_permissionList)) {
+                            ok=false;
+                            System.out.println("2つ目以降削除 アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
+                            remove_dataList.add(mdataList.get(i));
+                            mdataList.remove(i);
+                            notifyItemRemoved(i);
+                        }else{
+                            ok=true;
+                        }
+                    }
+                    if(mdataList.size()<=0)ok=true;
+                }while(!ok);
+
+
+
+                for (int i = 0; i < getItemCount(); i++) {
+                    System.out.println("アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
+                }
+
+            }
+        }
+
+        public int index_calculation(String s) {
+            for (int i = 0; i < mdataList.size(); i++) {
+                if (mdataList.get(i).label.equals(s)) return i;
+            }
+            return -1;
         }
 
 

@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         tools:context=".MainActivity">
 
+
         <!-- A RecyclerView with some commonly used attributes -->
 
         <androidx.recyclerview.widget.RecyclerView
@@ -19,6 +20,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="90dp"
             android:scrollbars="vertical"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -56,84 +58,193 @@
                 android:text="センサー"
                 android:textColor="@color/white" />
 
-
-            <Button
+            <CheckBox
                 android:id="@+id/calenderbutton"
-                android:layout_width="wrap_content"
+                android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
                 android:drawableTop="@drawable/calender"
+                android:paddingTop="8dp"
                 android:gravity="center|bottom"
+                android:paddingBottom="3dp"
                 android:text="カレンダー"
-                app:iconPadding="0dp" />
+                android:textColor="@color/white" />
 
-            <Button
+            <CheckBox
                 android:id="@+id/camerabutton"
-                android:layout_width="wrap_content"
+                android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
                 android:drawableTop="@drawable/camera"
+                android:paddingTop="8dp"
                 android:gravity="center|bottom"
-                android:text="カメラ" />
+                android:paddingBottom="3dp"
+                android:text="カメラ"
+                android:textColor="@color/white" />
 
-            <Button
+            <CheckBox
                 android:id="@+id/contactsbutton"
-                android:layout_width="wrap_content"
+                android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
                 android:drawableTop="@drawable/contacts"
+                android:paddingTop="8dp"
                 android:gravity="center|bottom"
-                android:text="連絡先" />
+                android:paddingBottom="3dp"
+                android:text="連絡先"
+                android:textColor="@color/white" />
 
-            <Button
+            <CheckBox
                 android:id="@+id/placebutton"
-                android:layout_width="wrap_content"
+                android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
                 android:drawableTop="@drawable/place"
+                android:paddingTop="8dp"
                 android:gravity="center|bottom"
-                android:text="位置情報" />
+                android:paddingBottom="3dp"
+                android:text="位置情報"
+                android:textColor="@color/white" />
 
-            <Button
+            <CheckBox
                 android:id="@+id/micbutton"
-                android:layout_width="wrap_content"
+                android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
                 android:drawableTop="@drawable/mic"
+                android:paddingTop="8dp"
                 android:gravity="center|bottom"
-                android:text="マイク" />
-            <Button
+                android:paddingBottom="3dp"
+                android:text="マイク"
+                android:textColor="@color/white" />
+
+            <CheckBox
                 android:id="@+id/phonebutton"
-                android:layout_width="wrap_content"
+                android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
                 android:drawableTop="@drawable/phone"
+                android:paddingTop="8dp"
                 android:gravity="center|bottom"
-                android:text="電話" />
-            <Button
+                android:paddingBottom="3dp"
+                android:text="電話"
+                android:textColor="@color/white" />
+
+            <CheckBox
                 android:id="@+id/smsbutton"
-                android:layout_width="wrap_content"
+                android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
                 android:drawableTop="@drawable/sms"
+                android:paddingTop="8dp"
                 android:gravity="center|bottom"
-                android:text="SMS" />
-            <Button
+                android:paddingBottom="3dp"
+                android:text="SMS"
+                android:textColor="@color/white" />
+
+            <CheckBox
                 android:id="@+id/storagebutton"
-                android:layout_width="wrap_content"
+                android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
                 android:drawableTop="@drawable/storage"
+                android:paddingTop="8dp"
                 android:gravity="center|bottom"
-                android:text="ストレージ" />
-            <Button
-                android:id="@+id/infobutton"
-                android:layout_width="wrap_content"
+                android:paddingBottom="3dp"
+                android:text="ストレージ"
+                android:textColor="@color/white" />
+
+            <CheckBox
+                android:id="@+id/backgroundbutton"
+                android:layout_width="105dp"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
-                android:gravity="center|bottom"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
                 android:drawableTop="@drawable/device_information"
-                android:text="その他" />
+                android:paddingTop="8dp"
+                android:gravity="center|bottom"
+                android:paddingBottom="3dp"
+                android:text="常時バック許可"
+                android:textColor="@color/white" />
+
+            <CheckBox
+                android:id="@+id/no_playstorebutton"
+                android:layout_width="105dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
+                android:drawableTop="@drawable/device_information"
+                android:paddingTop="8dp"
+                android:gravity="center|bottom"
+                android:paddingBottom="3dp"
+                android:text="野良アプリ"
+                android:textColor="@color/white" />
+
+            <CheckBox
+                android:id="@+id/infobutton"
+                android:layout_width="85dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
+                android:drawableTop="@drawable/device_information"
+                android:paddingTop="8dp"
+                android:gravity="center|bottom"
+                android:paddingBottom="3dp"
+                android:text="その他"
+                android:textColor="@color/white" />
+
 
         </LinearLayout>
 
