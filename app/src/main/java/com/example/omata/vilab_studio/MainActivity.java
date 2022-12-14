@@ -4,6 +4,7 @@ import static android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;
 
 import static java.text.Normalizer.normalize;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -192,6 +193,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             final View view = LayoutInflater.from(mContext).inflate(R.layout.activity_main, parent, false);
             return new ViewHolder(view);
+
+
         }
 
 
@@ -338,6 +341,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     resetApp("その他");
                 }
             });
+
+
         }
 
         //英語のパーミッショングループ名を日本語に変換する
