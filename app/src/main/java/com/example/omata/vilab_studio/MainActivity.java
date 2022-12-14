@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -48,21 +49,26 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         setContentView(R.layout.activity_main);
         setContentView(R.layout.activity);
+
         // 端末にインストール済のアプリケーション一覧情報を取得
         List<AppData> dataList = new ArrayList<AppData>();
         final PackageManager pm = getPackageManager();
-        final int flags = PackageManager.GET_UNINSTALLED_PACKAGES | PackageManager.GET_DISABLED_COMPONENTS;
         final List<ApplicationInfo> installedAppList = pm.getInstalledApplications(0);
+
         //とりあえず仮置きで権限を入れて表示（100個も権限ないだろみたいな）
         String[] requestedPermissions = new String[100];
 
 
         // リストに一覧データを格納する
         for (ApplicationInfo app : installedAppList) {
+            //プリインストールされたアプリとシステムアプリ以外を読み込む
             if (!((app.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM)) {
-                MainActivity.AppData data = new MainActivity.AppData();
-                data.label = app.loadLabel(pm).toString();
-                data.icon = app.loadIcon(pm);
+                AppData data = new MainActivity.AppData();
+                data.label = app.loadLabel(pm).toString();//表示されているアプリ名
+                data.icon = app.loadIcon(pm);//アイコン
+                data.packageName = app.packageName;//パッケージ名（com.android～みたいなあまり見ないやつ）
+                data.installername = pm.getInstallerPackageName(data.packageName);//インストールした場所（com.android.vending ならGooglePlayストア）
+
                 data.request_permission = new ArrayList<String>();
                 data.permissionGroup = new ArrayList<String>();
                 data.permission = "";
@@ -75,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 //ここでログにアプリ名と持っている権限を表示している
                 if (requestedPermissions != null) {
                     System.out.println("アプリ名：" + data.label);
+                    System.out.println("パッケージ名：" + data.packageName);
+                    System.out.println("インストール場所：" + data.installername);
                     PermissionInfo permissionInfo = new PermissionInfo();
                     for (String s : requestedPermissions) {
                         data.request_permission.add(s);//一個ずつ配列からListに入れていく
@@ -85,28 +93,25 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
                         }
 
-                        //System.out.println("groupname:" + permissionInfo.group +"   level:"+permissionInfo.protectionLevel+ "  permname:" + s+"    権限許可状況："+((pm.checkPermission(s,app.packageName) == PackageManager.PERMISSION_GRANTED)?true:false));
-
                         //権限がDangerousであるものは表示
                         //pm.checkPermission(権限名,パッケージ名)でユーザーが許可してるか取得
                         //それでもし0が出るならTrue、-1ならfalseを出力させる（三項演算子を使って）
                         if (Build.VERSION.SDK_INT >= 28) {//API28(Android9)以降用
                             if (permissionInfo.getProtection() == PROTECTION_DANGEROUS) {
-                                System.out.println("groupname:" + permissionInfo.group + "  permname:" + s + "    権限許可状況：" + ((pm.checkPermission(s, app.packageName) == PackageManager.PERMISSION_GRANTED) ? true : false));
+                                //System.out.println("groupname:" + permissionInfo.group + "  permname:" + s + "    権限許可状況：" + ((pm.checkPermission(s, app.packageName) == PackageManager.PERMISSION_GRANTED) ? true : false));
                                 //もし新しいグループだった場合は登録する
                                 if (!data.permissionGroup.contains(permissionInfo.group))
                                     data.permissionGroup.add(permissionInfo.group);
                             }
                         } else {//それ以下のバージョン用
                             if (permissionInfo.protectionLevel == 4097 || permissionInfo.protectionLevel == 1) {
-                                System.out.println("groupname:" + permissionInfo.group + "  permname:" + s + "    権限許可状況：" + ((pm.checkPermission(s, app.packageName) == PackageManager.PERMISSION_GRANTED) ? true : false));
+                                //System.out.println("groupname:" + permissionInfo.group + "  permname:" + s + "    権限許可状況：" + ((pm.checkPermission(s, app.packageName) == PackageManager.PERMISSION_GRANTED) ? true : false));
                                 //もし新しいグループだった場合は登録する
                                 if (!data.permissionGroup.contains(permissionInfo.group))
                                     data.permissionGroup.add(permissionInfo.group);
                             }
                         }
                     }
-
                 }
 
                 //グループの数繰り返して登録して面積分にする
@@ -122,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 System.out.println(data.permission);
             }
         }
+        playstore_check(dataList);
         sortdata(dataList);
 
 
@@ -138,9 +144,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             data.permission = data.permissionGroup.get(i);
             return data;
         } else {
-            MainActivity.AppData d2 = new MainActivity.AppData();
+            AppData d2 = new MainActivity.AppData();
             d2.label = data.label;
             d2.icon = data.icon;
+            d2.packageName = data.packageName;
+            d2.installername = data.installername;
             d2.request_permission = data.request_permission;
             d2.permissionGroup = data.permissionGroup;
             d2.permission = data.permissionGroup.get(i);
@@ -150,13 +158,32 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
 
     // アプリケーションデータ格納クラス
-    public static class AppData implements Serializable {
+    public static class AppData {
         String label;//アプリ名
         Drawable icon;//アプリアイコン
+        String packageName;
+        String installername;
+        boolean non_storeapp;
         List<String> request_permission;//要求権限
         List<String> permissionGroup;//パーミッショングループ
         String permission;//かさまし分のそれぞれの権限
 
+    }
+
+    public void playstore_check(List<AppData> appData) {
+        List<String> non_store_List = new ArrayList<String>(Arrays.asList("com.google.android.packageinstaller", null));
+        for (int i = 0; i < 2; i++) {
+            for (AppData data : appData) {
+                //もしインストール先がGooglePlayストアではない場合
+                if (data.installername == null || !(data.installername.equals("com.android.vending"))) {
+                    data.non_storeapp = true;
+                    //もし、野良アプリリストの中に含まれていれば野良アプリのパッケージ名もそのリストに登録する。（そのアプリからさらにアプリをインストールする可能性があるため）
+                    if (non_store_List.contains(data.installername))
+                        non_store_List.add(data.packageName);
+                    else data.non_storeapp = false;//人違いでした、、、
+                }
+            }
+        }
     }
 
     //ソートしたい
@@ -181,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         List<AppData> mdataList_copy = new ArrayList<AppData>();//本体
         List<AppData> remove_dataList = new ArrayList<AppData>();
         List<String> remove_permissionList = new ArrayList<String>();
+
         int count = 0;
 
         private RecyclerAdapter(final Context context, List<AppData> dataList) {
@@ -193,8 +221,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             final View view = LayoutInflater.from(mContext).inflate(R.layout.activity_main, parent, false);
             return new ViewHolder(view);
-
-
         }
 
 
@@ -205,20 +231,26 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             ImageView imageView = (ImageView) holder.itemView.findViewById(R.id.imageView);
             ImageView back = (ImageView) holder.itemView.findViewById(R.id.back);
             final TextView permissiontext = (TextView) holder.itemView.findViewById(R.id.permissiongroup_text);
-            //System.out.println("場所は"+position+" アプリ名：" + mdataList.get(position).label.toString());
+
 
             System.out.println("場所：" + position + " アプリ名：" + mdataList.get(position).label.toString() + "    権限：" + mdataList.get(position).permission.toString());
 
             textItem.setText(mdataList.get(position).label.toString());
             imageView.setImageDrawable(mdataList.get(position).icon);
 
+            if (mdataList.get(position).non_storeapp) {
+                back.setBackgroundColor(Color.parseColor("#cc0000"));
+            }
 
             if (mdataList.get(position).permissionGroup.isEmpty()) {//もしパーミッショングループをもっていなかったら
-                back.setBackgroundColor(Color.parseColor("#2196F3"));
+                if(mdataList.get(position).non_storeapp)back.setBackgroundColor(Color.parseColor("#aa66cc"));//野良だけど権限なしなら紫にしておく
+                else back.setBackgroundColor(Color.parseColor("#2196F3"));//Playストアからなら青
                 permissiontext.setText("危険な権限なし");
             } else {//危険な権限を持っている場合それを表示する
                 permissiontext.setText(permission_e2j(mdataList.get(position).permission));
             }
+
+
 
             //ここからボタン処理
             //センサーボタン処理
@@ -498,10 +530,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 remove_permissionList.add(permission_j2e(permissionname));
                 int index = -1;
                 System.out.println("remove_permissionList:" + remove_permissionList);
-                do{
+                do {
                     //アプリの数ループして、指定された権限があれば削除していく
                     for (int i = 0; i < remove_dataList.size(); i++) {
-                        System.out.println("appname:"+remove_dataList.get(i).label+"equals:"+remove_dataList.get(i).permission.equals(permission_j2e(permissionname))+"    group:"+remove_dataList.get(i).permissionGroup+"contain:"+remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList));
+                        System.out.println("appname:" + remove_dataList.get(i).label + "equals:" + remove_dataList.get(i).permission.equals(permission_j2e(permissionname)) + "    group:" + remove_dataList.get(i).permissionGroup + "contain:" + remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList));
                         //権限が一致する場合戻ってこーい
                         if (remove_dataList.get(i).permission.equals(permission_j2e(permissionname)) && remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList)) {
                             index = index_calculation(remove_dataList.get(i).label);
@@ -528,18 +560,17 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     for (int i = 0; i < mdataList.size(); i++) {
                         //System.out.println("appname:" + mdataList.get(i).label + "    group:" + mdataList.get(i).permissionGroup + "contain:" + mdataList.get(i).permissionGroup.containsAll(remove_permissionList));
                         if (!mdataList.get(i).permissionGroup.containsAll(remove_permissionList)) {
-                            ok=false;
+                            ok = false;
                             System.out.println("2つ目以降削除 アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
                             remove_dataList.add(mdataList.get(i));
                             mdataList.remove(i);
                             notifyItemRemoved(i);
-                        }else{
-                            ok=true;
+                        } else {
+                            ok = true;
                         }
                     }
-                    if(mdataList.size()<=0)ok=true;
-                }while(!ok);
-
+                    if (mdataList.size() <= 0) ok = true;
+                } while (!ok);
 
 
                 for (int i = 0; i < getItemCount(); i++) {
