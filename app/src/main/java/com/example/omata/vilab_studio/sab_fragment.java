@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainerView;
 
 public class sab_fragment extends Fragment {
     public static sab_fragment newInstance(String str){
@@ -20,6 +22,7 @@ public class sab_fragment extends Fragment {
 
         return fragment;
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -34,10 +37,13 @@ public class sab_fragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         Bundle args = getArguments();
         if(args != null ){
-            String str = args.getString("PackageName");
-
+            String packageName = args.getString("PackageName");
+            TextView textView = view.findViewById(R.id.fragment_text);
+            textView.setText(packageName);
+            System.out.println("sub:"+packageName);
         }
 
     }

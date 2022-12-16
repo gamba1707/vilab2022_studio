@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,8 +22,14 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +42,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
+    int tapcount=0;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //main.xmlの内容を読み込む
@@ -46,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         setContentView(R.layout.activity_main);
         setContentView(R.layout.activity);
@@ -63,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         for (ApplicationInfo app : installedAppList) {
             //プリインストールされたアプリとシステムアプリ以外を読み込む
             if (!((app.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM)) {
-                AppData data = new MainActivity.AppData();
+                AppData data = new AppData();
                 data.label = app.loadLabel(pm).toString();//表示されているアプリ名
                 data.icon = app.loadIcon(pm);//アイコン
                 data.packageName = app.packageName;//パッケージ名（com.android～みたいなあまり見ないやつ）
@@ -86,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     PermissionInfo permissionInfo = new PermissionInfo();
                     for (String s : requestedPermissions) {
                         data.request_permission.add(s);//一個ずつ配列からListに入れていく
-
                         try {
                             permissionInfo = pm.getPermissionInfo(s, 0);
                         } catch (PackageManager.NameNotFoundException e) {
@@ -200,6 +208,30 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         return appData;
     }
 
+    //戻るボタン
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK) {
+            if(tapcount>0)tapcount--;
+            ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setTitle("アプリの一覧");
+            getFragmentManager().popBackStack();
+            return super.onKeyDown(keyCode, event);
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+    @Override
+    public boolean onSupportNavigateUp() {
+        if(tapcount>0)tapcount--;
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setTitle("アプリの一覧");
+        getSupportFragmentManager().popBackStack();
+        System.out.println("onSupportNavigateUp");
+        return super.onSupportNavigateUp();
+    }
 
     //ここでリストをViewに設定する
     private final class RecyclerAdapter extends RecyclerView.Adapter {
@@ -209,12 +241,17 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         List<AppData> remove_dataList = new ArrayList<AppData>();
         List<String> remove_permissionList = new ArrayList<String>();
 
+
         int count = 0;
+
+
+
 
         private RecyclerAdapter(final Context context, List<AppData> dataList) {
             mContext = context;
             mdataList = dataList;
             mdataList_copy = dataList;
+            setHasStableIds(true);
         }
 
         @Override
@@ -232,18 +269,22 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             ImageView back = (ImageView) holder.itemView.findViewById(R.id.back);
             final TextView permissiontext = (TextView) holder.itemView.findViewById(R.id.permissiongroup_text);
 
-
-            System.out.println("場所：" + position + " アプリ名：" + mdataList.get(position).label.toString() + "    権限：" + mdataList.get(position).permission.toString());
+            //positionは最初の状態から変化しないらしい
+            //なので色々更新した後にはその時の状態がとれるholder.getLayoutPosition()にするらしい
+            System.out.println(remove_permissionList);
+            System.out.println("場所：" + holder.getLayoutPosition() + " アプリ名：" + mdataList.get(holder.getLayoutPosition()).label.toString() + "    権限：" + mdataList.get(holder.getLayoutPosition()).permission.toString());
 
             textItem.setText(mdataList.get(position).label.toString());
             imageView.setImageDrawable(mdataList.get(position).icon);
 
-            if (mdataList.get(position).non_storeapp) {
+            if (mdataList.get(holder.getLayoutPosition()).non_storeapp) {
                 back.setBackgroundColor(Color.parseColor("#cc0000"));
+            }else{
+                back.setBackgroundColor(Color.parseColor("#F8BBD0"));
             }
 
-            if (mdataList.get(position).permissionGroup.isEmpty()) {//もしパーミッショングループをもっていなかったら
-                if(mdataList.get(position).non_storeapp)back.setBackgroundColor(Color.parseColor("#aa66cc"));//野良だけど権限なしなら紫にしておく
+            if (mdataList.get(holder.getLayoutPosition()).permissionGroup.isEmpty()) {//もしパーミッショングループをもっていなかったら
+                if(mdataList.get(holder.getLayoutPosition()).non_storeapp)back.setBackgroundColor(Color.parseColor("#aa66cc"));//野良だけど権限なしなら紫にしておく
                 else back.setBackgroundColor(Color.parseColor("#2196F3"));//Playストアからなら青
                 permissiontext.setText("危険な権限なし");
             } else {//危険な権限を持っている場合それを表示する
@@ -251,129 +292,158 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             }
 
 
+            //RecycleViewの中のそれぞれのボタン
+            final int p = position;
+            String li= String.valueOf(getItemId(position));
+            ActionBar actionBar = getSupportActionBar();
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //一階以上押されないようにする
+                    if(tapcount<=0){
+                        tapcount++;
+                        actionBar.setDisplayHomeAsUpEnabled(true);
+                        actionBar.setTitle("アプリの詳細");
+                        Toast.makeText(v.getContext(), mdataList.get(p).label, Toast.LENGTH_SHORT).show();
 
-            //ここからボタン処理
-            //センサーボタン処理
-            CheckBox sensor_checkBox = findViewById(R.id.sensorbutton);
-            sensor_checkBox.setOnClickListener(view -> {
-                CheckBox c = (CheckBox) view;
-                if (c.isChecked()) {
-                    System.out.println("ONに変更されました");
-                    removeApp("センサー");
-                } else {
-                    System.out.println("OFFに変更されました");
-                    resetApp("センサー");
-                }
-            });
-            //カレンダーボタン処理
-            CheckBox calender_checkBox = findViewById(R.id.calenderbutton);
-            calender_checkBox.setOnClickListener(view -> {
-                CheckBox c = (CheckBox) view;
-                if (c.isChecked()) {
-                    System.out.println("ONに変更されました");
-                    removeApp("カレンダー");
-                } else {
-                    System.out.println("OFFに変更されました");
-                    resetApp("カレンダー");
-                }
-            });
-            //カメラボタン処理
-            CheckBox camera_checkBox = findViewById(R.id.camerabutton);
-            camera_checkBox.setOnClickListener(view -> {
-                CheckBox c = (CheckBox) view;
-                if (c.isChecked()) {
-                    System.out.println("ONに変更されました");
-                    removeApp("カメラ");
-                } else {
-                    System.out.println("OFFに変更されました");
-                    resetApp("カメラ");
-                }
-            });
-            //連絡先ボタン処理
-            CheckBox contact_checkBox = findViewById(R.id.contactsbutton);
-            contact_checkBox.setOnClickListener(view -> {
-                CheckBox c = (CheckBox) view;
-                if (c.isChecked()) {
-                    System.out.println("ONに変更されました");
-                    removeApp("連絡先");
-                } else {
-                    System.out.println("OFFに変更されました");
-                    resetApp("連絡先");
-                }
-            });
-            //位置情報ボタン処理
-            CheckBox place_checkBox = findViewById(R.id.placebutton);
-            place_checkBox.setOnClickListener(view -> {
-                CheckBox c = (CheckBox) view;
-                if (c.isChecked()) {
-                    System.out.println("ONに変更されました");
-                    removeApp("位置情報");
-                } else {
-                    System.out.println("OFFに変更されました");
-                    resetApp("位置情報");
-                }
-            });
-            //マイクボタン処理
-            CheckBox mic_checkBox = findViewById(R.id.micbutton);
-            mic_checkBox.setOnClickListener(view -> {
-                CheckBox c = (CheckBox) view;
-                if (c.isChecked()) {
-                    System.out.println("ONに変更されました");
-                    removeApp("マイク");
-                } else {
-                    System.out.println("OFFに変更されました");
-                    resetApp("マイク");
-                }
-            });
-            //電話ボタン処理
-            CheckBox phone_checkBox = findViewById(R.id.phonebutton);
-            phone_checkBox.setOnClickListener(view -> {
-                CheckBox c = (CheckBox) view;
-                if (c.isChecked()) {
-                    System.out.println("ONに変更されました");
-                    removeApp("電話機能");
-                } else {
-                    System.out.println("OFFに変更されました");
-                    resetApp("電話機能");
-                }
-            });
-            //smsボタン処理
-            CheckBox sms_checkBox = findViewById(R.id.smsbutton);
-            sms_checkBox.setOnClickListener(view -> {
-                CheckBox c = (CheckBox) view;
-                if (c.isChecked()) {
-                    System.out.println("ONに変更されました");
-                    removeApp("SMS(Cメール)");
-                } else {
-                    System.out.println("OFFに変更されました");
-                    resetApp("SMS(Cメール)");
-                }
-            });
-            //ストレージボタン処理
-            CheckBox storage_checkBox = findViewById(R.id.storagebutton);
-            storage_checkBox.setOnClickListener(view -> {
-                CheckBox c = (CheckBox) view;
-                if (c.isChecked()) {
-                    System.out.println("ONに変更されました");
-                    removeApp("ストレージ");
-                } else {
-                    System.out.println("OFFに変更されました");
-                    resetApp("ストレージ");
-                }
-            });
-            //その他ボタン処理
-            CheckBox info_checkBox = findViewById(R.id.infobutton);
-            info_checkBox.setOnClickListener(view -> {
-                CheckBox c = (CheckBox) view;
-                if (c.isChecked()) {
-                    System.out.println("ONに変更されました");
-                    removeApp("その他");
-                } else {
-                    System.out.println("OFFに変更されました");
-                    resetApp("その他");
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                        // BackStackを設定
+                        fragmentTransaction.addToBackStack(null);
+
+                        // パラメータを設定
+                        fragmentTransaction.add(R.id.container,
+                                sab_fragment.newInstance(mdataList.get(p).packageName));
+                        fragmentTransaction.commit();
+                    }
                 }
             });
 
+            //ここからボタン処理
+            //画面が上にある場合機能させないようにする。(すでに画面が上にあればtapcountが1以上になる)
+            if(tapcount<=0){
+                //センサーボタン処理
+                CheckBox sensor_checkBox = findViewById(R.id.sensorbutton);
+                sensor_checkBox.setOnClickListener(view -> {
+                    CheckBox c = (CheckBox) view;
+                    if (c.isChecked()) {
+                        System.out.println("ONに変更されました");
+                        removeApp("センサー");
+                    } else {
+                        System.out.println("OFFに変更されました");
+                        resetApp("センサー");
+                    }
+                });
+                //カレンダーボタン処理
+                CheckBox calender_checkBox = findViewById(R.id.calenderbutton);
+                calender_checkBox.setOnClickListener(view -> {
+                    CheckBox c = (CheckBox) view;
+                    if (c.isChecked()) {
+                        System.out.println("ONに変更されました");
+                        removeApp("カレンダー");
+                    } else {
+                        System.out.println("OFFに変更されました");
+                        resetApp("カレンダー");
+                    }
+                });
+                //カメラボタン処理
+                CheckBox camera_checkBox = findViewById(R.id.camerabutton);
+                camera_checkBox.setOnClickListener(view -> {
+                    CheckBox c = (CheckBox) view;
+                    if (c.isChecked()) {
+                        System.out.println("ONに変更されました");
+                        removeApp("カメラ");
+                    } else {
+                        System.out.println("OFFに変更されました");
+                        resetApp("カメラ");
+                    }
+                });
+                //連絡先ボタン処理
+                CheckBox contact_checkBox = findViewById(R.id.contactsbutton);
+                contact_checkBox.setOnClickListener(view -> {
+                    CheckBox c = (CheckBox) view;
+                    if (c.isChecked()) {
+                        System.out.println("ONに変更されました");
+                        removeApp("連絡先");
+                    } else {
+                        System.out.println("OFFに変更されました");
+                        resetApp("連絡先");
+                    }
+                });
+                //位置情報ボタン処理
+                CheckBox place_checkBox = findViewById(R.id.placebutton);
+                place_checkBox.setOnClickListener(view -> {
+                    CheckBox c = (CheckBox) view;
+                    if (c.isChecked()) {
+                        System.out.println("ONに変更されました");
+                        removeApp("位置情報");
+                    } else {
+                        System.out.println("OFFに変更されました");
+                        resetApp("位置情報");
+                    }
+                });
+                //マイクボタン処理
+                CheckBox mic_checkBox = findViewById(R.id.micbutton);
+                mic_checkBox.setOnClickListener(view -> {
+                    CheckBox c = (CheckBox) view;
+                    if (c.isChecked()) {
+                        System.out.println("ONに変更されました");
+                        removeApp("マイク");
+                    } else {
+                        System.out.println("OFFに変更されました");
+                        resetApp("マイク");
+                    }
+                });
+                //電話ボタン処理
+                CheckBox phone_checkBox = findViewById(R.id.phonebutton);
+                phone_checkBox.setOnClickListener(view -> {
+                    CheckBox c = (CheckBox) view;
+                    if (c.isChecked()) {
+                        System.out.println("ONに変更されました");
+                        removeApp("電話機能");
+                    } else {
+                        System.out.println("OFFに変更されました");
+                        resetApp("電話機能");
+                    }
+                });
+                //smsボタン処理
+                CheckBox sms_checkBox = findViewById(R.id.smsbutton);
+                sms_checkBox.setOnClickListener(view -> {
+                    CheckBox c = (CheckBox) view;
+                    if (c.isChecked()) {
+                        System.out.println("ONに変更されました");
+                        removeApp("SMS(Cメール)");
+                    } else {
+                        System.out.println("OFFに変更されました");
+                        resetApp("SMS(Cメール)");
+                    }
+                });
+                //ストレージボタン処理
+                CheckBox storage_checkBox = findViewById(R.id.storagebutton);
+                storage_checkBox.setOnClickListener(view -> {
+                    CheckBox c = (CheckBox) view;
+                    if (c.isChecked()) {
+                        System.out.println("ONに変更されました");
+                        removeApp("ストレージ");
+                    } else {
+                        System.out.println("OFFに変更されました");
+                        resetApp("ストレージ");
+                    }
+                });
+                //野良アプリボタン処理
+                CheckBox info_checkBox = findViewById(R.id.non_playstorebutton);
+                info_checkBox.setOnClickListener(view -> {
+                    CheckBox c = (CheckBox) view;
+                    if (c.isChecked()) {
+                        System.out.println("ONに変更されました");
+                        removeApp("野良アプリ");
+                    } else {
+                        System.out.println("OFFに変更されました");
+                        resetApp("野良アプリ");
+                    }
+                });
+            }
 
         }
 
@@ -458,135 +528,155 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         }
 
         public void resetApp(String permissionname) {
-            remove_permissionList.remove(permission_j2e(permissionname));
-            boolean ok = false;
-            do {
-                for (int i = 0; i < remove_dataList.size(); i++) {
-                    //もしそのアプリの権限が今消している権限ではなかったら
-                    if (!(remove_permissionList.contains(remove_dataList.get(i).permission))) {
-                        mdataList.add(remove_dataList.get(i));
-                        System.out.println("追加 アプリ：" + remove_dataList.get(i).label + "権限名：" + remove_dataList.get(i).permission);
-                        remove_dataList.remove(i);
+            boolean check=true;
+            if(permissionname.equals("野良アプリ")){
+                do{
+                    for(int i=0;i<remove_dataList.size();i++){
+                        if(!remove_dataList.get(i).non_storeapp&&remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList)){
+                            mdataList.add(remove_dataList.get(i));
+                            remove_dataList.remove(i);
+                        }
                     }
-                }
-                check:
-                for (int i = 0; i < remove_dataList.size(); i++) {
-                    if (remove_permissionList.contains(remove_dataList.get(i).permission))
-                        ok = true;
-                    else {
-                        ok = false;
-                        System.out.println("追加 アプリ：" + remove_dataList.get(i).label + "権限名：" + remove_dataList.get(i).permission);
-                        mdataList.add(remove_dataList.get(i));
-                        remove_dataList.remove(i);
-                        break check;//もし指定した権限以外が残っていた場合はもう一度やり直し
+                    for(int i=0;i<remove_dataList.size();i++){
+                        if(!remove_dataList.get(i).non_storeapp&&remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList)){
+                            mdataList.add(remove_dataList.get(i));
+                            remove_dataList.remove(i);
+                            check=true;
+                            break;
+                        }else{
+                            check=false;
+                        }
                     }
-                }
-                if (remove_dataList.isEmpty()) ok = true;
-            } while (!ok);
-            sortdata(mdataList);
-            notifyDataSetChanged();
+                    //もうリストの中にデータがない（全て表示した）場合は抜け出す
+                    if(remove_dataList.size()<=0)check=false;
+                }while(check);
+                sortdata(mdataList);
+                notifyDataSetChanged();
+            }else{//普通の権限たち
+                // チェックボックスのオブジェクトを取得
+                CheckBox non_playstore_checkBox = (CheckBox)findViewById(R.id.non_playstorebutton);
+                // チェック状態を取得
+                boolean non_playstore_checkBoxChecked = non_playstore_checkBox.isChecked();
+                remove_permissionList.remove(permission_j2e(permissionname));
+                do{
+
+                    //表示されているアプリ分回る
+                    for(int i=0;i<remove_dataList.size();i++){
+
+                        if(non_playstore_checkBoxChecked&&remove_dataList.get(i).non_storeapp){
+                            //System.out.println("アプリ："+remove_dataList.get(i).label+remove_dataList.get(i).non_storeapp);
+                            //もし、その削除したアプリの中にもらった権限が存在しない。尚且つ、消したアプリの権限の中に表示するべき（まだ選択中の）権限なら再表示（その権限を含んでいるという絞り込みを解除したいから）
+                            if(!remove_dataList.get(i).permissionGroup.contains(permission_j2e(permissionname))&&remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList)){
+                                System.out.println("アプリ："+remove_dataList.get(i).label);
+                                mdataList.add(remove_dataList.get(i));
+                                    remove_dataList.remove(i);
+                            }
+                        }
+                        else if(!non_playstore_checkBoxChecked){
+                            //もし、その削除したアプリの中にもらった権限が存在しない。尚且つ、消したアプリの権限の中に表示するべき（まだ選択中の）権限なら再表示（その権限を含んでいるという絞り込みを解除したいから）
+                            if(!remove_dataList.get(i).permissionGroup.contains(permission_j2e(permissionname))&&remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList)){
+                                System.out.println("？アプリ："+remove_dataList.get(i).label);
+                                    mdataList.add(remove_dataList.get(i));
+                                    remove_dataList.remove(i);
+                            }
+                        }
+                    }
+                    //なぜかすり抜けるやつがあるので確認してまだあるようならもう一度上のを実行する
+                    check:for(int i=0;i<remove_dataList.size();i++){
+                        if(non_playstore_checkBoxChecked&&remove_dataList.get(i).non_storeapp){
+                            //もし、その削除したアプリの中にもらった権限が存在しない。尚且つ、消したアプリの権限の中に表示するべき（まだ選択中の）権限なら再表示（その権限を含んでいるという絞り込みを解除したいから）
+                            if(!remove_dataList.get(i).permissionGroup.contains(permission_j2e(permissionname))&&remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList)){
+                                System.out.println("追加アプリ："+remove_dataList.get(i).label);
+                                mdataList.add(remove_dataList.get(i));
+                                remove_dataList.remove(i);
+                                check=true;
+                                break check;
+                            }else{
+                                check=false;
+                            }
+                        }
+                        else if(!non_playstore_checkBoxChecked){
+                            //もし、その削除したアプリの中にもらった権限が存在しない。尚且つ、消したアプリの権限の中に表示するべき（まだ選択中の）権限なら再表示（その権限を含んでいるという絞り込みを解除したいから）
+                            if(!remove_dataList.get(i).permissionGroup.contains(permission_j2e(permissionname))&&remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList)){
+                                System.out.println("？追加アプリ："+remove_dataList.get(i).label);
+                                mdataList.add(remove_dataList.get(i));
+                                remove_dataList.remove(i);
+                                check=true;
+                                break check;
+                            }else{
+                                check=false;
+                            }
+                        }else{
+                            check=false;
+                        }
+                    }
+                    //もうリストの中にデータがない（全て表示した）場合は抜け出す
+                    if(remove_dataList.size()<=0)check=false;
+                }while(check);
+                sortdata(mdataList);
+                notifyDataSetChanged();
+            }
+
         }
 
         //権限名を渡すとその権限以外のアプリを削除する
         public void removeApp(String permissionname) {
-            //もし一つ目の権限選択の場合
-            if (remove_permissionList.isEmpty()) {
+            boolean check=true;
+            if(permissionname.equals("野良アプリ")){
+                do{
+                    for(int i=0;i<mdataList.size();i++){
+                        if(!mdataList.get(i).non_storeapp){
+                            remove_dataList.add(mdataList.get(i));
+                            mdataList.remove(i);
+                            notifyItemRemoved(i);
+                        }
+                    }
+                    for(int i=0;i<mdataList.size();i++){
+                        if(!mdataList.get(i).non_storeapp){
+                            remove_dataList.add(mdataList.get(i));
+                            mdataList.remove(i);
+                            notifyItemRemoved(i);
+                            check=true;
+                            break;
+                        }
+                        else{
+                            check=false;
+                        }
+                    }
+                    //もうリストの中にデータがない（全て削除した）場合は抜け出す
+                    if(mdataList.size()<=0)check=false;
+                }while(check);
+            }else {
                 remove_permissionList.add(permission_j2e(permissionname));
-                boolean ok = false;
-                do {
-                    //アプリの数ループして、指定された権限があれば削除していく
-                    for (int i = 0; i < getItemCount(); i++) {
-                        if (!mdataList.get(i).permission.equals(permission_j2e(permissionname))) {
-                            //System.out.println("アプリ："+ra.mdataList.get(i).label+"権限名："+ra.mdataList.get(i).permission);
-                            System.out.println("削除 アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
+
+                do{
+                    //表示されているアプリ分回る
+                    for(int i=0;i<mdataList.size();i++){
+                        //もし、そのアプリの中にもらった権限が存在しなければ
+                        if(!mdataList.get(i).permissionGroup.contains(permission_j2e(permissionname))){
                             remove_dataList.add(mdataList.get(i));
                             mdataList.remove(i);
                             notifyItemRemoved(i);
                         }
                     }
-                    //なぜか消えないアプリがあるので確かめて消し忘れがある場合もう一度消す作業を行う
-                    check:
-                    for (int i = 0; i < getItemCount(); i++) {
-                        if (mdataList.get(i).permission.equals(permission_j2e(permissionname)))
-                            ok = true;
-                        else {
-                            ok = false;
-                            System.out.println("削除 アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
+                    for(int i=0;i<mdataList.size();i++){
+                        //もし、そのアプリの中にもらった権限が存在しなければ
+                        if(!mdataList.get(i).permissionGroup.contains(permission_j2e(permissionname))){
                             remove_dataList.add(mdataList.get(i));
                             mdataList.remove(i);
                             notifyItemRemoved(i);
-                            break check;//もし指定した権限以外が残っていた場合はもう一度やり直し
+                            check=true;
+                            break;
+                        }else{
+                            check=false;
                         }
                     }
-                    if (getItemCount() <= 0) ok = true;
-                } while (!ok);//trueな限りdoを回り続けるという罠
-                for (int i = 0; i < getItemCount(); i++) {
-                    System.out.println("アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
-                }
+                    //もうリストの中にデータがない（全て削除した）場合は抜け出す
+                    if(mdataList.size()<=0)check=false;
+                }while(check);
             }
-            //もし複数選択している場合はそのアプリの隣に表示
-            else {
-                boolean ok = false;
-                remove_permissionList.add(permission_j2e(permissionname));
-                int index = -1;
-                System.out.println("remove_permissionList:" + remove_permissionList);
-                do {
-                    //アプリの数ループして、指定された権限があれば削除していく
-                    for (int i = 0; i < remove_dataList.size(); i++) {
-                        System.out.println("appname:" + remove_dataList.get(i).label + "equals:" + remove_dataList.get(i).permission.equals(permission_j2e(permissionname)) + "    group:" + remove_dataList.get(i).permissionGroup + "contain:" + remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList));
-                        //権限が一致する場合戻ってこーい
-                        if (remove_dataList.get(i).permission.equals(permission_j2e(permissionname)) && remove_dataList.get(i).permissionGroup.containsAll(remove_permissionList)) {
-                            index = index_calculation(remove_dataList.get(i).label);
 
-
-                            if (index != -1) {
-                                System.out.println("復元 position:" + index + " アプリ：" + remove_dataList.get(i).label + "権限名：" + remove_dataList.get(i).permission);
-                                mdataList.add(index, remove_dataList.get(i));
-                                notifyItemInserted(index);
-                                remove_dataList.remove(i);
-                            }
-                        }
-                    }
-                    for (int i = 0; i < mdataList.size(); i++) {
-                        System.out.println("appname:" + mdataList.get(i).label + "    group:" + mdataList.get(i).permissionGroup + "contain:" + mdataList.get(i).permissionGroup.containsAll(remove_permissionList));
-                        if (!mdataList.get(i).permissionGroup.containsAll(remove_permissionList)) {
-                            System.out.println("2つ目以降削除 アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
-                            remove_dataList.add(mdataList.get(i));
-                            mdataList.remove(i);
-                            notifyItemRemoved(i);
-                        }
-                    }
-                    //確認
-                    for (int i = 0; i < mdataList.size(); i++) {
-                        //System.out.println("appname:" + mdataList.get(i).label + "    group:" + mdataList.get(i).permissionGroup + "contain:" + mdataList.get(i).permissionGroup.containsAll(remove_permissionList));
-                        if (!mdataList.get(i).permissionGroup.containsAll(remove_permissionList)) {
-                            ok = false;
-                            System.out.println("2つ目以降削除 アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
-                            remove_dataList.add(mdataList.get(i));
-                            mdataList.remove(i);
-                            notifyItemRemoved(i);
-                        } else {
-                            ok = true;
-                        }
-                    }
-                    if (mdataList.size() <= 0) ok = true;
-                } while (!ok);
-
-
-                for (int i = 0; i < getItemCount(); i++) {
-                    System.out.println("アプリ：" + mdataList.get(i).label + "権限名：" + mdataList.get(i).permission);
-                }
-
-            }
         }
-
-        public int index_calculation(String s) {
-            for (int i = 0; i < mdataList.size(); i++) {
-                if (mdataList.get(i).label.equals(s)) return i;
-            }
-            return -1;
-        }
-
 
         @Override
         public int getItemCount() {
@@ -610,56 +700,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         @Override
         public long getItemId(int position) {
-            return position;
+            return mdataList.get(position).hashCode();
         }
 
         @Override
         public int getItemViewType(int position) {
             return position;
         }
-
     }
-
-
-//
-//    // アプリケーションのラベルとアイコンを表示するためのアダプタークラス
-//    private static class AppListAdapter extends ArrayAdapter<AppData> {
-//
-//        private final LayoutInflater mInflater;
-//
-//        public AppListAdapter(Context context, List<AppData> dataList) {
-//            super(context, R.layout.activity_main);
-//            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//            addAll(dataList);
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//
-//            ViewHolder holder = new ViewHolder();
-//
-//            if (convertView == null) {
-//                convertView = mInflater.inflate(R.layout.activity_main, parent, false);
-//                holder.textLabel = (TextView) convertView.findViewById(R.id.label);
-//                holder.imageIcon = (ImageView) convertView.findViewById(R.id.icon);
-//                convertView.setTag(holder);
-//            } else {
-//                holder = (ViewHolder) convertView.getTag();
-//            }
-//
-//            // 表示データを取得
-//            final AppData data = getItem(position);
-//            // ラベルとアイコンをリストビューに設定
-//            holder.textLabel.setText(data.label);
-//            holder.imageIcon.setImageDrawable(data.icon);
-//
-//            return convertView;
-//        }
-//    }
-//
-//    // ビューホルダー
-//    private static class ViewHolder {
-//        TextView textLabel;
-//        ImageView imageIcon;
-//    }
 }

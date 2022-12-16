@@ -31,6 +31,8 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+
     <HorizontalScrollView
         android:layout_width="fill_parent"
         android:layout_height="90dp"
@@ -212,7 +214,7 @@
                 android:textColor="@color/white" />
 
             <CheckBox
-                android:id="@+id/no_playstorebutton"
+                android:id="@+id/non_playstorebutton"
                 android:layout_width="105dp"
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
@@ -249,5 +251,10 @@
         </LinearLayout>
 
     </HorizontalScrollView>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </RelativeLayout>
