@@ -100,6 +100,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                         } catch (PackageManager.NameNotFoundException e) {
 
                         }
+                        System.out.println("groupname:" + permissionInfo.group + "  permname:" + s + "    権限許可状況：" + ((pm.checkPermission(s, app.packageName) == PackageManager.PERMISSION_GRANTED) ? true : false));
+
+                        //REQUEST_IGNORE_BATTERY_OPTIMIZATIONSを追加したい
 
                         //権限がDangerousであるものは表示
                         //pm.checkPermission(権限名,パッケージ名)でユーザーが許可してるか取得
@@ -111,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                                 if (!data.permissionGroup.contains(permissionInfo.group))
                                     data.permissionGroup.add(permissionInfo.group);
                             }
+                            else if(s.equals("android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")) data.permissionGroup.add(s);
                         } else {//それ以下のバージョン用
                             if (permissionInfo.protectionLevel == 4097 || permissionInfo.protectionLevel == 1) {
                                 //System.out.println("groupname:" + permissionInfo.group + "  permname:" + s + "    権限許可状況：" + ((pm.checkPermission(s, app.packageName) == PackageManager.PERMISSION_GRANTED) ? true : false));
@@ -118,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                                 if (!data.permissionGroup.contains(permissionInfo.group))
                                     data.permissionGroup.add(permissionInfo.group);
                             }
+                            else if(s.equals("android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")) data.permissionGroup.add(s);
                         }
                     }
                 }
@@ -443,6 +448,18 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                         resetApp("野良アプリ");
                     }
                 });
+                //野良アプリボタン処理
+                CheckBox background_checkBox = findViewById(R.id.backgroundbutton);
+                background_checkBox.setOnClickListener(view -> {
+                    CheckBox c = (CheckBox) view;
+                    if (c.isChecked()) {
+                        System.out.println("ONに変更されました");
+                        removeApp("常時バック許可");
+                    } else {
+                        System.out.println("OFFに変更されました");
+                        resetApp("常時バック許可");
+                    }
+                });
             }
 
         }
@@ -483,6 +500,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     return "SMS(Cメール)";
                 case "android.permission-group.STORAGE":
                     return "ストレージ";
+                case "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS":
+                    return "常時バック許可";
             }
             return s.substring(s.lastIndexOf(".") + 1);//おそらくここに来る場合はAndroid純正の権限ではなく独自権限
         }
@@ -523,6 +542,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     return "android.permission-group.SMS";
                 case "ストレージ":
                     return "android.permission-group.STORAGE";
+                case "常時バック許可":
+                    return "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS";
             }
             return "取得失敗";//
         }
