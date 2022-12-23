@@ -48,6 +48,7 @@ public class StartScreen extends AppCompatActivity implements Serializable {
                 startActivity(intent);
             }
         }, 500);
+
     }
 
 

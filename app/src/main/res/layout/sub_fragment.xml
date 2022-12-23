@@ -1,49 +1,312 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff">
 
-    <ImageView
-        android:id="@+id/backk"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:background="#e1e3e5"></ImageView>
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/fragment_icon"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="15dp" />
+        <ImageView
+            android:id="@+id/backk"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:background="#e1e3e5"></ImageView>
 
-    <TextView
-        android:id="@+id/fragment_appnametext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="2dp"
-        android:layout_toRightOf="@+id/fragment_icon"
-        android:text="アプリ名"
-        android:textColor="@color/black"
-        android:textSize="18dp"></TextView>
+        <ImageView
+            android:id="@+id/fragment_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="15dp" />
 
-    <TextView
-        android:id="@+id/fragment_installtext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/fragment_appnametext"
-        android:layout_marginStart="0dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="4dp"
-        android:layout_toRightOf="@+id/fragment_icon"
-        android:text="2000年11月11日に\nGooglePlayストアからインストール"></TextView>
+        <TextView
+            android:id="@+id/fragment_appnametext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="2dp"
+            android:layout_toRightOf="@+id/fragment_icon"
+            android:text="アプリ名"
+            android:textColor="@color/black"
+            android:textSize="18dp"></TextView>
+
+        <TextView
+            android:id="@+id/fragment_installtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment_appnametext"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toRightOf="@+id/fragment_icon"
+            android:text="2000年11月11日に\nGooglePlayストアからインストール"></TextView>
+
+        <TextView
+            android:id="@+id/fragment_permission"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/backk"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="権限"
+            android:textColor="@color/black"
+            android:textSize="18dp"></TextView>
+
+        <TextView
+            android:id="@+id/fragment_setumei"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment_permission"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="　許可の場合赤、未許可の場合紫で表示されます。"></TextView>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment_setumei"
+            >
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:padding="0dp">
+
+                <Button
+                    android:id="@+id/fragment_sensor"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:layout_gravity="top"
+                    android:drawableTop="@drawable/sensor_50"
+                    android:paddingBottom="-5dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="5dp"
+                    android:text="センサー"
+                    android:textColor="#737374"
+                    android:textSize="12dp"
+                    android:backgroundTint="#fafafa"></Button>
+
+                <Button
+                    android:id="@+id/fragment_calender"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/calender_50"
+                    android:text="カレンダー"
+                    android:textColor="#737374"
+                    android:textSize="12dp"
+                    android:paddingBottom="-5dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="5dp"
+                    android:backgroundTint="#fafafa"></Button>
+
+                <Button
+                    android:id="@+id/fragment_camera"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/camera_50"
+                    android:paddingBottom="-5dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="5dp"
+                    android:text="カメラ"
+                    android:textColor="#737374"
+                    android:textSize="12dp"
+                    android:backgroundTint="#fafafa"></Button>
+
+                <Button
+                    android:id="@+id/fragment_contact"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/contacts_50"
+                    android:paddingBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="5dp"
+                    android:drawablePadding="0dp"
+                    android:text="連絡先"
+                    android:textColor="#737374"
+                    android:textSize="12dp"
+                    android:backgroundTint="#fafafa"></Button>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="-1dp"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/fragment_place"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/place_50"
+                    android:paddingBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="5dp"
+                    android:drawablePadding="0dp"
+                    android:text="位置情報"
+                    android:textColor="#737374"
+                    android:textSize="12dp"
+                    android:backgroundTint="#fafafa"></Button>
+
+                <Button
+                    android:id="@+id/fragment_mic"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/mic_50"
+                    android:paddingBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="5dp"
+                    android:text="マイク"
+                    android:textColor="#737374"
+                    android:textSize="12dp"
+                    android:backgroundTint="#fafafa"></Button>
+
+                <Button
+                    android:id="@+id/fragment_phone"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/phone_50"
+                    android:paddingBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="5dp"
+                    android:text="電話機能"
+                    android:textColor="#737374"
+                    android:textSize="12dp"
+                    android:backgroundTint="#fafafa"></Button>
+
+                <Button
+                    android:id="@+id/fragment_sms"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/sms_50"
+                    android:paddingBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="5dp"
+                    android:text="SMS(Cﾒｰﾙ)"
+                    android:textColor="#737374"
+                    android:textSize="12dp"
+                    android:backgroundTint="#fafafa"></Button>
 
 
-</RelativeLayout>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/fragment_storage"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/storage_50"
+                    android:paddingBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="5dp"
+                    android:text="ストレージ"
+                    android:textColor="#737374"
+                    android:textSize="12dp"
+                    android:backgroundTint="#fafafa"></Button>
+
+                <Button
+                    android:id="@+id/fragment_background"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#fafafa"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/info_50"
+                    android:includeFontPadding="false"
+                    android:paddingStart="0dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="常時バック許可"
+                    android:textColor="#737374"
+                    android:textSize="12dp"></Button>
+
+                <Button
+                    android:id="@+id/fragment_non_playstore"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#fafafa"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/android_50"
+                    android:includeFontPadding="false"
+                    android:paddingStart="0dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="野良アプリ"
+                    android:textColor="#737374"
+                    android:textSize="12dp"></Button>
+            </TableRow>
+
+        </TableLayout>
+
+
+
+
+    </RelativeLayout>
+
+</ScrollView>

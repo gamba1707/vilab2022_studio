@@ -33,6 +33,11 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
+import com.turingtechnologies.materialscrollbar.CustomIndicator;
+import com.turingtechnologies.materialscrollbar.DragScrollBar;
+import com.turingtechnologies.materialscrollbar.INameableAdapter;
+
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -50,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         inflater.inflate(R.menu.option, menu);
         return true;
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +156,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 4));
         recyclerView.setAdapter(new RecyclerAdapter(getApplicationContext(), dataList));
+
+        View scrollView = findViewById(R.id.dragScrollBar);
+        if( scrollView instanceof DragScrollBar){
+            DragScrollBar materialScrollBar = (DragScrollBar) scrollView;
+            materialScrollBar.setIndicator(new AlphabetIndicator(this),true);
+        }
     }
 
     //ここで渡されたパーミッショングループの数、データを水増しする。（中で書くとdataが一つしか生成できなくてこうするしかなかった）
@@ -178,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         String installername;
         boolean non_storeapp;
         List<String> request_permission;//要求権限
-        List<String> permissionGroup;//パーミッショングループ
+        ArrayList<String> permissionGroup;//パーミッショングループ
         String permission;//かさまし分のそれぞれの権限
 
     }
@@ -213,15 +226,21 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         return appData;
     }
 
+
     //戻るボタン
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK) {
-            if(tapcount>0)tapcount--;
-            ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setTitle("アプリの一覧");
-            getFragmentManager().popBackStack();
+            if(tapcount>0){
+                ActionBar actionBar = getSupportActionBar();
+                actionBar.setDisplayHomeAsUpEnabled(false);
+                actionBar.setTitle("アプリの一覧");
+                getFragmentManager().popBackStack();
+                tapcount--;
+            }else{
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+
             return super.onKeyDown(keyCode, event);
         } else {
             return super.onKeyDown(keyCode, event);
@@ -239,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     }
 
     //ここでリストをViewに設定する
-    private final class RecyclerAdapter extends RecyclerView.Adapter {
+    private final class RecyclerAdapter extends RecyclerView.Adapter implements INameableAdapter {
         private final Context mContext;
         List<AppData> mdataList = new ArrayList<AppData>();//本体
         List<AppData> mdataList_copy = new ArrayList<AppData>();//本体
@@ -273,6 +292,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             ImageView imageView = (ImageView) holder.itemView.findViewById(R.id.imageView);
             ImageView back = (ImageView) holder.itemView.findViewById(R.id.back);
             final TextView permissiontext = (TextView) holder.itemView.findViewById(R.id.permissiongroup_text);
+
+
 
             //positionは最初の状態から変化しないらしい
             //なので色々更新した後にはその時の状態がとれるholder.getLayoutPosition()にするらしい
@@ -319,8 +340,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
                         // パラメータを設定
                         fragmentTransaction.add(R.id.container,
-                                sab_fragment.newInstance(mdataList.get(p).packageName));
+                                sab_fragment.newInstance(mdataList.get(p).packageName,mdataList.get(p).permissionGroup,mdataList.get(p).non_storeapp));
                         fragmentTransaction.commit();
+
                     }
                 }
             });
@@ -702,6 +724,21 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         @Override
         public int getItemCount() {
             return mdataList.size();
+        }
+
+        //ここでスクロールバーの文字を取得？設定？する
+        @Override
+        public Character getCharacterForElement(int i) {
+            //位置的に普通のリスト表示なら一番上の文字を取ればいいが、グリッド表示なのでそれ用に見やすいように調整
+            //一番左上から0,1,2,と増えていくので一番左の列番号を求めてそれの一段下の文字を表示する
+            int position=((i/4)*4)+4;
+            AppData appData=mdataList.get(position);
+            String kana = normalize(appData.label, Normalizer.Form.NFKC);
+            Character c = new Character('#');
+            if( kana != null && kana.length() > 0) {
+                c = kana.charAt(0);
+            }
+            return c;
         }
 
         private class ViewHolder extends RecyclerView.ViewHolder {

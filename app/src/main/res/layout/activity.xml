@@ -6,19 +6,17 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="90dp"
         tools:context=".MainActivity">
 
-
         <!-- A RecyclerView with some commonly used attributes -->
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="90dp"
             android:scrollbars="vertical"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -28,8 +26,20 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
+        <com.turingtechnologies.materialscrollbar.DragScrollBar
+            android:id="@+id/dragScrollBar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            app:msb_lightOnTouch="true"
+            app:msb_recyclerView="@id/recyclerview"
+            app:msb_scrollMode="lastElement" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </RelativeLayout>
 
 
 
