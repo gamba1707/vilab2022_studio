@@ -4,6 +4,7 @@ import static android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;
 
 import static java.text.Normalizer.normalize;
 
+import android.app.Fragment;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -27,7 +28,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -231,15 +231,15 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK) {
-            if(tapcount>0){
+            String delete_fragment=getSupportFragmentManager().findFragmentById(R.id.container).getClass().getSimpleName();
+            System.out.println("今消したフラグメント:"+delete_fragment);
+            if(delete_fragment.equals("sab_fragment")){
+                tapcount=0;
                 ActionBar actionBar = getSupportActionBar();
                 actionBar.setDisplayHomeAsUpEnabled(false);
                 actionBar.setTitle("アプリの一覧");
-                getFragmentManager().popBackStack();
-                tapcount--;
-            }else{
-                android.os.Process.killProcess(android.os.Process.myPid());
             }
+            getFragmentManager().popBackStack();
 
             return super.onKeyDown(keyCode, event);
         } else {
@@ -248,10 +248,13 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     }
     @Override
     public boolean onSupportNavigateUp() {
-        if(tapcount>0)tapcount--;
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setTitle("アプリの一覧");
+        String delete_fragment=getSupportFragmentManager().findFragmentById(R.id.container).getClass().getSimpleName();
+        if(delete_fragment.equals("sab_fragment")){
+            tapcount=0;
+            ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setTitle("アプリの一覧");
+        }
         getSupportFragmentManager().popBackStack();
         System.out.println("onSupportNavigateUp");
         return super.onSupportNavigateUp();
@@ -287,7 +290,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            //holder.setIsRecyclable(false);//リサイクルして軽くするという良さは消しているが、これをしないと見るたびに色指定が変わる
             final TextView textItem = (TextView) holder.itemView.findViewById(R.id.label);
             ImageView imageView = (ImageView) holder.itemView.findViewById(R.id.imageView);
             ImageView back = (ImageView) holder.itemView.findViewById(R.id.back);

@@ -2,13 +2,16 @@ package com.example.omata.vilab_studio;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +25,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -196,13 +201,35 @@ public class sab_fragment extends Fragment {
                         if (powerManager.isIgnoringBatteryOptimizations(packageName))
                             background.setBackgroundColor(Color.parseColor("#ff4444"));
                         else background.setBackgroundColor(Color.parseColor("#bb86fc"));
-                    }else{
+                    } else {
                         background.setText("OS対象外！");
                     }
                     background.setTextColor(Color.parseColor("#000000"));
                 }
-
             }
+            //sub_fragment.xml内にある設定画面を開くボタン
+            Button settingbutton = view.findViewById(R.id.fragment_setting);
+            settingbutton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent("android.settings.SETTINGS");
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(Uri.parse("package:" + packageName));
+                    startActivity(intent);
+                }
+            });
+
+            Button all_permissionbutton = view.findViewById(R.id.fragment_setting_permissions);
+            all_permissionbutton.setOnClickListener(v -> {
+                FragmentManager fragmentManager = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction =
+                        fragmentManager.beginTransaction();
+                // BackStackを設定
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.replace(R.id.container,
+                        sub_fragment_permission_all.newInstance());
+                fragmentTransaction.commit();
+            });
         }
 
     }
