@@ -1,4 +1,4 @@
-package com.example.omata.vilab_studio;
+package com.vilab.vilab_studio;
 
 import org.junit.Test;
 

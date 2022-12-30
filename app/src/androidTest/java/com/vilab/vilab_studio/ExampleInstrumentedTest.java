@@ -1,4 +1,4 @@
-package com.example.omata.vilab_studio;
+package com.vilab.vilab_studio;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.example.omata.vilab_studio", appContext.getPackageName());
+        assertEquals("com.vilab.vilab_studio", appContext.getPackageName());
     }
 }

@@ -14,6 +14,19 @@
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/contacts.xml" value="0.1805" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/contacts_50.xml" value="0.2445" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/device_information.xml" value="0.1805" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_bodysensor.xml" value="0.2" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_calender.xml" value="0.2" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_camera.xml" value="0.2" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_contacts.xml" value="0.2" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_device_information.xml" value="0.2" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_media_24.xml" value="0.196" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_mic.xml" value="0.2" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_notifications_24.xml" value="0.196" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_phone.xml" value="0.2" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_place.xml" value="0.2" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_power_settings_new_24.xml" value="0.196" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_sms.xml" value="0.2" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/fragmentperm_storage.xml" value="0.2" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/ic_baseline_place_24.xml" value="0.1805" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1805" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/info_50.xml" value="0.1945" />
@@ -30,15 +43,16 @@
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/sms_50.xml" value="0.2445" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/storage.xml" value="0.1805" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/drawable/storage_50.xml" value="0.2445" />
-        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/activity.xml" value="0.2" />
-        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/activity_main.xml" value="0.4375" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/activity.xml" value="0.1" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/activity_main_old.xml" value="0.3555253623188406" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/grid_item.xml" value="0.33" />
-        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/loading.xml" value="0.1859375" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/loading.xml" value="0.5" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/main.xml" value="0.3555253623188406" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/menu.xml" value="0.18489583333333334" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/permission_list.xml" value="0.33" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/sub_activity.xml" value="0.2967079948696024" />
-        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/sub_fragment.xml" value="0.46749654218533887" />
+        <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/sub_fragment.xml" value="0.26587301587301587" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/layout/sub_fragment_permissions.xml" value="0.33" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/menu/option.xml" value="0.184375" />
         <entry key="..\:/vilab/vilab_Studio/app/src/main/res/xml/permissioncolor.xml" value="0.2967079948696024" />

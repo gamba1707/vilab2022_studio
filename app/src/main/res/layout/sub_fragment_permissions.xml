@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/sensor_list"
+        android:id="@+id/fragment2_permission_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/fragment2_permission" />
