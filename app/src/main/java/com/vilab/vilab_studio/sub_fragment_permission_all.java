@@ -65,10 +65,12 @@ public class sub_fragment_permission_all extends Fragment {
                     permissions.permissions_name = permissionInfo.loadLabel(pm);//日本語の権限名
                     permissions.permission_GRANTED = "この権限は" + permission_GRANTED(s, packageName);//許可されているかどうかの文章
                     permissions.permission_detail = permissionInfo.loadDescription(pm);//格納されている説明文
-                    permissions.grorp = permissionInfo.group;//属しているグループ
+                    if (!(permissionInfo.group ==null) &&permissionInfo.group.equals("android.permission-group.UNDEFINED"))
+                        permissions.grorp = MainActivity.perm2group(s.substring(s.lastIndexOf(".") + 1));
+                    else permissions.grorp=permissionInfo.group;
                     //アイコンを設定
-                    if (permissionInfo.group != null)
-                        permissions.icon = drawable_permissionicon(permissionInfo.group);
+                    if (permissions.grorp != null)
+                        permissions.icon = drawable_permissionicon(permissions.grorp);
                     else permissions.icon = drawable_permissionicon("null");
                     //PermissionsクラスのデータとしてdataListに追加
                     dataList.add(permissions);
@@ -113,11 +115,11 @@ public class sub_fragment_permission_all extends Fragment {
     public int drawable_permissionicon(String permission) {
         switch (permission) {
             case "android.permission-group.ACTIVITY_RECOGNITION":
-                return R.drawable.fragmentperm_bodysensor;
+                return R.drawable.fragmentperm_activity;
             case "android.permission-group.CALENDAR":
                 return R.drawable.fragmentperm_calender;
             case "android.permission-group.CALL_LOG":
-                return R.drawable.fragmentperm_phone;
+                return R.drawable.fragmentperm_calllog;
             case "android.permission-group.CAMERA":
                 return R.drawable.fragmentperm_camera;
             case "android.permission-group.CONTACTS":

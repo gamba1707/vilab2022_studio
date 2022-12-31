@@ -53,8 +53,8 @@
             android:layout_width="fill_parent"
             android:layout_height="match_parent">
 
-        <CheckBox
-                android:id="@+id/sensorbutton"
+            <CheckBox
+                android:id="@+id/activitybutton"
                 android:layout_width="85dp"
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
@@ -63,11 +63,11 @@
                 android:layout_marginEnd="5dp"
                 android:background="@drawable/btn_bg"
                 android:button="@null"
-                android:drawableTop="@drawable/bodysensor"
+                android:drawableTop="@drawable/activity"
                 android:paddingTop="8dp"
                 android:gravity="center|bottom"
                 android:paddingBottom="3dp"
-                android:text="センサー"
+                android:text="行動認識"
                 android:textColor="@color/white" />
 
             <CheckBox
@@ -85,6 +85,23 @@
                 android:gravity="center|bottom"
                 android:paddingBottom="3dp"
                 android:text="カレンダー"
+                android:textColor="@color/white" />
+
+            <CheckBox
+                android:id="@+id/calllogbutton"
+                android:layout_width="85dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
+                android:drawableTop="@drawable/calllog"
+                android:paddingTop="8dp"
+                android:gravity="center|bottom"
+                android:paddingBottom="3dp"
+                android:text="通話履歴"
                 android:textColor="@color/white" />
 
             <CheckBox
@@ -156,6 +173,23 @@
                 android:textColor="@color/white" />
 
             <CheckBox
+                android:id="@+id/nearbybutton"
+                android:layout_width="85dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
+                android:drawableTop="@drawable/nearbydevice"
+                android:paddingTop="8dp"
+                android:gravity="center|bottom"
+                android:paddingBottom="3dp"
+                android:text="ﾆｱﾊﾞｲﾃﾞﾊﾞｲｽ"
+                android:textColor="@color/white" />
+
+            <CheckBox
                 android:id="@+id/phonebutton"
                 android:layout_width="85dp"
                 android:layout_height="match_parent"
@@ -170,6 +204,23 @@
                 android:gravity="center|bottom"
                 android:paddingBottom="3dp"
                 android:text="電話"
+                android:textColor="@color/white" />
+
+            <CheckBox
+                android:id="@+id/sensorbutton"
+                android:layout_width="85dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/btn_bg"
+                android:button="@null"
+                android:drawableTop="@drawable/bodysensor"
+                android:paddingTop="8dp"
+                android:gravity="center|bottom"
+                android:paddingBottom="3dp"
+                android:text="センサー"
                 android:textColor="@color/white" />
 
             <CheckBox

@@ -4,6 +4,7 @@ import static android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;
 
 import static java.text.Normalizer.normalize;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -38,6 +39,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 public class MainActivity extends AppCompatActivity {
     int tapcount = 0;
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                         //ここでそれぞれの権限の状況を確認する
-                        System.out.println("groupname:" + permissionInfo.group + "  permname:" + s + "    権限許可状況：" + ((pm.checkPermission(s, app.packageName) == PackageManager.PERMISSION_GRANTED) ? true : false));
+                        System.out.println("groupname:" + permissionInfo.group + "  permname:" + s + "    権限許可状況：" + (pm.checkPermission(s, app.packageName) == PackageManager.PERMISSION_GRANTED));
                         System.out.println(permissionInfo.loadLabel(pm));
                         System.out.println(permissionInfo.loadDescription(pm));
 
@@ -100,8 +103,13 @@ public class MainActivity extends AppCompatActivity {
                         if (Build.VERSION.SDK_INT >= 28) {//API28(Android9)以降用
                             if (permissionInfo.getProtection() == PROTECTION_DANGEROUS) {
                                 //もし新しいグループだった場合は登録する
-                                if (!data.permissionGroup.contains(permissionInfo.group))
+                                if (!data.permissionGroup.contains(permissionInfo.group)&&!permissionInfo.group.equals("android.permission-group.UNDEFINED")){
                                     data.permissionGroup.add(permissionInfo.group);
+                                }
+                                else if(!data.permissionGroup.contains(perm2group(s.substring(s.lastIndexOf(".") + 1)))&&permissionInfo.group.equals("android.permission-group.UNDEFINED")){
+                                    perm2group(s.substring(s.lastIndexOf(".") + 1));
+                                    data.permissionGroup.add(perm2group(s.substring(s.lastIndexOf(".") + 1)));
+                                }
                                 //Dengerousではないが常時バックグラウンド許可の権限を持っていた場合追加
                             } else if (s.equals("android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"))
                                 data.permissionGroup.add(s);
@@ -115,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                             } else if (s.equals("android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"))
                                 data.permissionGroup.add(s);
                         }
+
                     }
                 }
 
@@ -148,6 +157,67 @@ public class MainActivity extends AppCompatActivity {
         if (scrollView instanceof DragScrollBar) {
             DragScrollBar materialScrollBar = (DragScrollBar) scrollView;
             materialScrollBar.setIndicator(new AlphabetIndicator(this), true);
+        }
+    }
+
+    //受け取った権限名からグループ名を導き出す
+    public static String perm2group(String perm){
+        switch (perm){
+            case "ACTIVITY_RECOGNITION":
+                return "android.permission-group.ACTIVITY_RECOGNITION";
+            case "READ_CALENDAR":
+            case "WRITE_CALENDAR":
+                return "android.permission-group.CALENDAR";
+            case"READ_CALL_LOG":
+            case"WRITE_CALL_LOG":
+                if (Build.VERSION.SDK_INT >= 28)return "android.permission-group.CALL_LOG";
+                else return "android.permission-group.PHONE";
+            case"CAMERA":
+                return "android.permission-group.CAMERA";
+            case"READ_CONTACTS":
+            case"WRITE_CONTACTS":
+            case"GET_ACCOUNTS":
+                return "android.permission-group.CONTACTS";
+            case"ACCESS_FINE_LOCATION":
+            case"ACCESS_COARSE_LOCATION":
+            case"ACCESS_BACKGROUND_LOCATION":
+            case"ACCESS_MEDIA_LOCATION":
+                return "android.permission-group.LOCATION";
+            case"RECORD_AUDIO":
+                return "android.permission-group.MICROPHONE";
+            case"BLUETOOTH_ADVERTISE":
+            case"BLUETOOTH_CONNECT":
+            case"BLUETOOTH_SCAN":
+            case"NEARBY_WIFI_DEVICES":
+                if (Build.VERSION.SDK_INT >= 31)return "android.permission-group.NEARBY_DEVICES";
+                else return "android.permission-group.LOCATION";
+            case"POST_NOTIFICATIONS":
+                return "android.permission-group.NOTIFICATIONS";
+            case"READ_PHONE_STATE":
+            case"CALL_PHONE":
+            case"ANSWER_PHONE_CALLS":
+            case"ADD_VOICEMAIL":
+            case"USE_SIP":
+            case"READ_PHONE_NUMBERS":
+            case"ACCEPT_HANDOVER":
+                return "android.permission-group.PHONE";
+            case"BODY_SENSORS":
+            case "BODY_SENSORS_BACKGROUND":
+                return "android.permission-group.SENSORS";
+            case"READ_SMS":
+            case"RECEIVE_WAP_PUSH":
+            case"RECEIVE_MMS":
+            case"RECEIVE_SMS":
+            case"SEND_SMS":
+                return "android.permission-group.SMS";
+            case"READ_EXTERNAL_STORAGE":
+            case"WRITE_EXTERNAL_STORAGE":
+            case"READ_MEDIA_AUDIO":
+            case"READ_MEDIA_IMAGES":
+            case"READ_MEDIA_VIDEO":
+                return "android.permission-group.STORAGE";
+            default:
+                return perm;
         }
     }
 
@@ -467,6 +537,42 @@ public class MainActivity extends AppCompatActivity {
                     resetApp("常時バック許可");
                 }
             });
+            //行動認識ボタン処理(API29)
+            CheckBox activity_checkBox = findViewById(R.id.activitybutton);
+            activity_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("行動認識");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("行動認識");
+                }
+            });
+            //通話履歴ボタン処理(API28)
+            CheckBox calllog_checkBox = findViewById(R.id.calllogbutton);
+            calllog_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("通話履歴");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("通話履歴");
+                }
+            });
+            //ニアバイデバイスボタン処理（API31）
+            CheckBox nearby_checkBox = findViewById(R.id.nearbybutton);
+            nearby_checkBox.setOnClickListener(view -> {
+                CheckBox c = (CheckBox) view;
+                if (c.isChecked()) {
+                    System.out.println("ONに変更されました");
+                    removeApp("ニアバイデバイス(Bluetooth)");
+                } else {
+                    System.out.println("OFFに変更されました");
+                    resetApp("ニアバイデバイス(Bluetooth)");
+                }
+            });
         }
 
         //英語のパーミッショングループ名を日本語に変換するメソッド
@@ -515,6 +621,7 @@ public class MainActivity extends AppCompatActivity {
         //android.permission-group.STORAGE などを ストレージ に変換する
         public String permission_j2e(String s) {
             switch (s) {
+                case "身体認識":
                 case "行動認識":
                     return "android.permission-group.ACTIVITY_RECOGNITION";
                 case "カレンダー":

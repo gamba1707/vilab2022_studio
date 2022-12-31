@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff">
@@ -54,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/backk"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="4dp"
             android:text="権限"
@@ -278,7 +279,7 @@
                     android:paddingTop="5dp"
                     android:paddingEnd="0dp"
                     android:paddingBottom="0dp"
-                    android:text="常時バック許可"
+                    android:text="常時ﾊﾞｯｸ許可"
                     android:textColor="#737374"
                     android:textSize="12dp" />
 
@@ -298,6 +299,91 @@
                     android:paddingEnd="0dp"
                     android:paddingBottom="0dp"
                     android:text="野良アプリ"
+                    android:textColor="#737374"
+                    android:textSize="12dp" />
+                <!--通話履歴　API28以降
+                Android9.0の場合まだ今のように縦長スマホでない場合が多いためなるべく画面を収めたい-->
+                <Button
+                    android:id="@+id/fragment_calllog"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#fafafa"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/fragment_callog_50"
+                    android:includeFontPadding="false"
+                    android:paddingStart="0dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="通話履歴"
+                    android:textColor="#737374"
+                    android:textSize="12dp"/>
+            </TableRow>
+
+            <!--ここからもしAPIが高ければ表示-->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+                <!--行動認識　API29以降-->
+                <Button
+                    android:id="@+id/fragment_activity"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:drawableTop="@drawable/fragment_activity_50"
+                    android:paddingBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="5dp"
+                    android:text="行動認識"
+                    android:textColor="#737374"
+                    android:textSize="12dp"
+                    android:backgroundTint="#fafafa"/>
+
+                <!--ニアバイデバイス　API31以降-->
+                <Button
+                    android:id="@+id/fragment_nearby"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#fafafa"
+                    android:drawableTop="@drawable/fragment_nearby"
+                    android:enabled="false"
+                    android:includeFontPadding="false"
+                    android:paddingStart="0dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="ﾆｱﾊﾞｲﾃﾞﾊﾞｲｽ"
+                    android:textColor="#737374"
+                    android:textSize="12dp"/>
+                <!--通知　API33以降-->
+                <Button
+                    android:id="@+id/fragment_notifications"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#fafafa"
+                    android:drawableTop="@drawable/fragment_notifications_50"
+                    android:enabled="false"
+                    android:includeFontPadding="false"
+                    android:paddingStart="0dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="通知"
                     android:textColor="#737374"
                     android:textSize="12dp" />
             </TableRow>

@@ -78,6 +78,8 @@ public class sub_fragment extends Fragment {
             String installername = "";
 
 
+
+
             try {
                 //アプリのアイコン取得
                 Drawable icon = pm.getApplicationIcon(packageName);
@@ -203,6 +205,59 @@ public class sub_fragment extends Fragment {
                         background.setText("OS対象外！");
                     }
                     background.setTextColor(Color.parseColor("#000000"));
+                }
+                //API28(Android9.0)以降のみ通話履歴グループを表示
+                if (Build.VERSION.SDK_INT >= 28) {
+                    Button call_log=view.findViewById(R.id.fragment_calllog);
+                    if (permissionGroup.contains("android.permission-group.CALL_LOG")) {
+                        if (pm.checkPermission("android.permission.READ_CALL_LOG", packageName) == PackageManager.PERMISSION_GRANTED)
+                            call_log.setBackgroundColor(Color.parseColor("#ff4444"));
+                        else call_log.setBackgroundColor(Color.parseColor("#bb86fc"));
+                        call_log.setTextColor(Color.parseColor("#000000"));
+                    }
+                }
+                else{
+                    Button call_log=view.findViewById(R.id.fragment_calllog);
+                    call_log.setVisibility(View.GONE);
+                }
+                //API29(Android10.0)以降のみ身体認識グループ
+                if (Build.VERSION.SDK_INT >= 29) {
+                    Button activity=view.findViewById(R.id.fragment_activity);
+                    if (permissionGroup.contains("android.permission-group.ACTIVITY_RECOGNITION")) {
+                        if (pm.checkPermission("android.permission.ACTIVITY_RECOGNITION", packageName) == PackageManager.PERMISSION_GRANTED)
+                            activity.setBackgroundColor(Color.parseColor("#ff4444"));
+                        else activity.setBackgroundColor(Color.parseColor("#bb86fc"));
+                        activity.setTextColor(Color.parseColor("#000000"));
+                    }
+                }else{
+                    Button activity=view.findViewById(R.id.fragment_activity);
+                    activity.setVisibility(View.GONE);
+                }
+                //API31(Android12.0)以降のみニアバイデバイスグループ
+                if (Build.VERSION.SDK_INT >= 31) {
+                    Button nearby=view.findViewById(R.id.fragment_nearby);
+                    if (permissionGroup.contains("android.permission-group.NEARBY_DEVICES")) {
+                        if (pm.checkPermission("android.permission.BLUETOOTH_ADVERTISE", packageName) == PackageManager.PERMISSION_GRANTED)
+                            nearby.setBackgroundColor(Color.parseColor("#ff4444"));
+                        else nearby.setBackgroundColor(Color.parseColor("#bb86fc"));
+                        nearby.setTextColor(Color.parseColor("#000000"));
+                    }
+                }else{
+                    Button nearby=view.findViewById(R.id.fragment_nearby);
+                    nearby.setVisibility(View.GONE);
+                }
+                //API33(Android13.0)以降のみ通知グループ
+                if (Build.VERSION.SDK_INT >=33) {
+                    Button notifications=view.findViewById(R.id.fragment_notifications);
+                    if (permissionGroup.contains("android.permission-group.NOTIFICATIONS")) {
+                        if (pm.checkPermission("android.permission.POST_NOTIFICATIONS", packageName) == PackageManager.PERMISSION_GRANTED)
+                            notifications.setBackgroundColor(Color.parseColor("#ff4444"));
+                        else notifications.setBackgroundColor(Color.parseColor("#bb86fc"));
+                        notifications.setTextColor(Color.parseColor("#000000"));
+                    }
+                }else{
+                    Button notifications=view.findViewById(R.id.fragment_notifications);
+                    notifications.setVisibility(View.GONE);
                 }
             }
             //sub_fragment.xml内にある設定画面を開くボタン
