@@ -53,6 +53,7 @@
             android:layout_width="fill_parent"
             android:layout_height="match_parent">
 
+            <!--行動認識　API29以降-->
             <CheckBox
                 android:id="@+id/activitybutton"
                 android:layout_width="85dp"
@@ -87,6 +88,7 @@
                 android:text="カレンダー"
                 android:textColor="@color/white" />
 
+            <!--通話履歴　API28以降-->
             <CheckBox
                 android:id="@+id/calllogbutton"
                 android:layout_width="85dp"
@@ -172,6 +174,7 @@
                 android:text="マイク"
                 android:textColor="@color/white" />
 
+            <!--ニアバイデバイス　API31以降-->
             <CheckBox
                 android:id="@+id/nearbybutton"
                 android:layout_width="85dp"
@@ -290,24 +293,6 @@
                 android:paddingBottom="3dp"
                 android:text="野良アプリ"
                 android:textColor="@color/white" />
-
-            <CheckBox
-                android:id="@+id/infobutton"
-                android:layout_width="85dp"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/btn_bg"
-                android:button="@null"
-                android:drawableTop="@drawable/device_information"
-                android:paddingTop="8dp"
-                android:gravity="center|bottom"
-                android:paddingBottom="3dp"
-                android:text="その他"
-                android:textColor="@color/white" />
-
 
         </LinearLayout>
 

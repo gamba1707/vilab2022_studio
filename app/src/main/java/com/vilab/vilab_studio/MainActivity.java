@@ -4,7 +4,6 @@ import static android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;
 
 import static java.text.Normalizer.normalize;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -17,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,8 +39,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 public class MainActivity extends AppCompatActivity {
     int tapcount = 0;
@@ -50,6 +48,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setContentView(R.layout.activity);
+
+        //バージョンによってボタンを非表示にする
+        if (Build.VERSION.SDK_INT < 28) {
+            Button calllog = findViewById(R.id.calllogbutton);
+            calllog.setVisibility(View.GONE);
+        }
+        if (Build.VERSION.SDK_INT < 29) {
+            Button activity = findViewById(R.id.activitybutton);
+            activity.setVisibility(View.GONE);
+        }
+        if (Build.VERSION.SDK_INT < 31) {
+            Button nearby = findViewById(R.id.nearbybutton);
+            nearby.setVisibility(View.GONE);
+        }
+
 
         // 端末にインストール済のアプリケーション一覧情報を取得
         List<AppData> dataList = new ArrayList<AppData>();
@@ -103,10 +116,10 @@ public class MainActivity extends AppCompatActivity {
                         if (Build.VERSION.SDK_INT >= 28) {//API28(Android9)以降用
                             if (permissionInfo.getProtection() == PROTECTION_DANGEROUS) {
                                 //もし新しいグループだった場合は登録する
-                                if (!data.permissionGroup.contains(permissionInfo.group)&&!permissionInfo.group.equals("android.permission-group.UNDEFINED")){
+                                if (!data.permissionGroup.contains(permissionInfo.group) && !permissionInfo.group.equals("android.permission-group.UNDEFINED")) {
                                     data.permissionGroup.add(permissionInfo.group);
-                                }
-                                else if(!data.permissionGroup.contains(perm2group(s.substring(s.lastIndexOf(".") + 1)))&&permissionInfo.group.equals("android.permission-group.UNDEFINED")){
+                                }//Android10.0以降はgroupからグループ名を取得することが出来なくなったので仕方なく手動で読み取る（更新日大晦日）
+                                else if (!data.permissionGroup.contains(perm2group(s.substring(s.lastIndexOf(".") + 1))) && permissionInfo.group.equals("android.permission-group.UNDEFINED")) {
                                     perm2group(s.substring(s.lastIndexOf(".") + 1));
                                     data.permissionGroup.add(perm2group(s.substring(s.lastIndexOf(".") + 1)));
                                 }
@@ -161,60 +174,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //受け取った権限名からグループ名を導き出す
-    public static String perm2group(String perm){
-        switch (perm){
+    public static String perm2group(String perm) {
+        switch (perm) {
             case "ACTIVITY_RECOGNITION":
                 return "android.permission-group.ACTIVITY_RECOGNITION";
             case "READ_CALENDAR":
             case "WRITE_CALENDAR":
                 return "android.permission-group.CALENDAR";
-            case"READ_CALL_LOG":
-            case"WRITE_CALL_LOG":
-                if (Build.VERSION.SDK_INT >= 28)return "android.permission-group.CALL_LOG";
+            case "READ_CALL_LOG":
+            case "WRITE_CALL_LOG":
+                if (Build.VERSION.SDK_INT >= 28) return "android.permission-group.CALL_LOG";
                 else return "android.permission-group.PHONE";
-            case"CAMERA":
+            case "CAMERA":
                 return "android.permission-group.CAMERA";
-            case"READ_CONTACTS":
-            case"WRITE_CONTACTS":
-            case"GET_ACCOUNTS":
+            case "READ_CONTACTS":
+            case "WRITE_CONTACTS":
+            case "GET_ACCOUNTS":
                 return "android.permission-group.CONTACTS";
-            case"ACCESS_FINE_LOCATION":
-            case"ACCESS_COARSE_LOCATION":
-            case"ACCESS_BACKGROUND_LOCATION":
-            case"ACCESS_MEDIA_LOCATION":
+            case "ACCESS_FINE_LOCATION":
+            case "ACCESS_COARSE_LOCATION":
+            case "ACCESS_BACKGROUND_LOCATION":
+            case "ACCESS_MEDIA_LOCATION":
                 return "android.permission-group.LOCATION";
-            case"RECORD_AUDIO":
+            case "RECORD_AUDIO":
                 return "android.permission-group.MICROPHONE";
-            case"BLUETOOTH_ADVERTISE":
-            case"BLUETOOTH_CONNECT":
-            case"BLUETOOTH_SCAN":
-            case"NEARBY_WIFI_DEVICES":
-                if (Build.VERSION.SDK_INT >= 31)return "android.permission-group.NEARBY_DEVICES";
+            case "BLUETOOTH_ADVERTISE":
+            case "BLUETOOTH_CONNECT":
+            case "BLUETOOTH_SCAN":
+            case "NEARBY_WIFI_DEVICES":
+                if (Build.VERSION.SDK_INT >= 31) return "android.permission-group.NEARBY_DEVICES";
                 else return "android.permission-group.LOCATION";
-            case"POST_NOTIFICATIONS":
+            case "POST_NOTIFICATIONS":
                 return "android.permission-group.NOTIFICATIONS";
-            case"READ_PHONE_STATE":
-            case"CALL_PHONE":
-            case"ANSWER_PHONE_CALLS":
-            case"ADD_VOICEMAIL":
-            case"USE_SIP":
-            case"READ_PHONE_NUMBERS":
-            case"ACCEPT_HANDOVER":
+            case "READ_PHONE_STATE":
+            case "CALL_PHONE":
+            case "ANSWER_PHONE_CALLS":
+            case "ADD_VOICEMAIL":
+            case "USE_SIP":
+            case "READ_PHONE_NUMBERS":
+            case "ACCEPT_HANDOVER":
                 return "android.permission-group.PHONE";
-            case"BODY_SENSORS":
+            case "BODY_SENSORS":
             case "BODY_SENSORS_BACKGROUND":
                 return "android.permission-group.SENSORS";
-            case"READ_SMS":
-            case"RECEIVE_WAP_PUSH":
-            case"RECEIVE_MMS":
-            case"RECEIVE_SMS":
-            case"SEND_SMS":
+            case "READ_SMS":
+            case "RECEIVE_WAP_PUSH":
+            case "RECEIVE_MMS":
+            case "RECEIVE_SMS":
+            case "SEND_SMS":
                 return "android.permission-group.SMS";
-            case"READ_EXTERNAL_STORAGE":
-            case"WRITE_EXTERNAL_STORAGE":
-            case"READ_MEDIA_AUDIO":
-            case"READ_MEDIA_IMAGES":
-            case"READ_MEDIA_VIDEO":
+            case "READ_EXTERNAL_STORAGE":
+            case "WRITE_EXTERNAL_STORAGE":
+            case "READ_MEDIA_AUDIO":
+            case "READ_MEDIA_IMAGES":
+            case "READ_MEDIA_VIDEO":
                 return "android.permission-group.STORAGE";
             default:
                 return perm;

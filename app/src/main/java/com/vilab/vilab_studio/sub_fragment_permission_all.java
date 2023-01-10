@@ -65,9 +65,9 @@ public class sub_fragment_permission_all extends Fragment {
                     permissions.permissions_name = permissionInfo.loadLabel(pm);//日本語の権限名
                     permissions.permission_GRANTED = "この権限は" + permission_GRANTED(s, packageName);//許可されているかどうかの文章
                     permissions.permission_detail = permissionInfo.loadDescription(pm);//格納されている説明文
-                    if (!(permissionInfo.group ==null) &&permissionInfo.group.equals("android.permission-group.UNDEFINED"))
+                    if (!(permissionInfo.group == null) && permissionInfo.group.equals("android.permission-group.UNDEFINED"))
                         permissions.grorp = MainActivity.perm2group(s.substring(s.lastIndexOf(".") + 1));
-                    else permissions.grorp=permissionInfo.group;
+                    else permissions.grorp = permissionInfo.group;
                     //アイコンを設定
                     if (permissions.grorp != null)
                         permissions.icon = drawable_permissionicon(permissions.grorp);
