@@ -268,15 +268,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void playstore_check(List<AppData> appData) {
         //あらかじめどう考えても正規ストアでない物をリストアップしてある
-        List<String> non_store_List = new ArrayList<String>(Arrays.asList("com.google.android.packageinstaller", null));
-        for (AppData data : appData) {
-            //もしインストール先がGooglePlayストアではない場合
-            if (data.installername == null || !(data.installername.equals("com.android.vending"))) {
-                data.non_storeapp = true;
-                //もし、野良アプリリストの中に含まれていれば野良アプリのパッケージ名もそのリストに登録する。（そのアプリからさらにアプリをインストールする可能性があるため）
-                if (non_store_List.contains(data.installername))
-                    non_store_List.add(data.packageName);
-                else data.non_storeapp = false;//人違いでした、、、
+        List<String> non_store_List = new ArrayList<String>(Arrays.asList("com.google.android.packageinstaller","com.google.android.apps.nbu.files","com.aefyr.sai", null));
+        for(int i=0;i<1;i++){
+            for (AppData data : appData) {
+                //もしインストール先がGooglePlayストアではない場合
+                if (data.installername == null || !(data.installername.equals("com.android.vending"))) {
+                    System.out.println(non_store_List);
+                    data.non_storeapp = true;
+                    //もし、野良アプリリストの中に含まれていれば野良アプリのパッケージ名もそのリストに登録する。（そのアプリからさらにアプリをインストールする可能性があるため）
+                    if (non_store_List.contains(data.installername))
+                        non_store_List.add(data.packageName);
+                }
             }
         }
     }
@@ -370,6 +372,7 @@ public class MainActivity extends AppCompatActivity {
             //Playストアじゃない場合、色を赤にする
             if (mdataList.get(holder.getLayoutPosition()).non_storeapp) {
                 back.setBackgroundColor(Color.parseColor("#cc0000"));
+                System.out.println("ストアアプリではない");
             } else {
                 //Playストアの場合一旦ピンクにする
                 back.setBackgroundColor(Color.parseColor("#F8BBD0"));
